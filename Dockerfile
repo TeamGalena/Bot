@@ -18,6 +18,5 @@ COPY src src
 COPY migrations migrations
 
 # run the app
-USER bun
 EXPOSE 3000/tcp
 ENTRYPOINT [ "bun", "run", "src/app.ts" ]
