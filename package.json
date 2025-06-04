@@ -1,5 +1,5 @@
 {
-  "name": "herald",
+  "name": "@teamgalena/bot",
   "module": "src/app.ts",
   "type": "module",
   "scripts": {

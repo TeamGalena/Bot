@@ -1,5 +1,6 @@
 import { server as createServer } from "@hapi/hapi";
-import { loadSupporterUuids } from "./database";
+import { loadFlaggedUuids, loadSupporterUuids } from "./database";
+import { isFlag } from "./flags";
 import logger from "./logger";
 
 const server = createServer({ port: 3000 });
@@ -18,6 +19,23 @@ server.route({
     }
 
     return await loadSupporterUuids(aboveRank);
+  },
+});
+
+server.route({
+  method: "GET",
+  path: "/api/flagged/{flag}",
+  handler: async (req, tools) => {
+    const { flag } = req.params;
+    if (!isFlag(flag)) {
+      return tools
+        .response({
+          message: `unknown flag '${flag}'`,
+        })
+        .code(400);
+    }
+
+    return await loadFlaggedUuids(flag);
   },
 });
 

@@ -11,7 +11,8 @@ import {
 import { config } from "../config";
 import { UserError } from "../error";
 import logger from "../logger";
-import * as makeAnnouncement from "./linkMinecraft";
+import * as claimFlag from "./claimFlag";
+import * as linkMinecraft from "./linkMinecraft";
 
 type CommandHandler = (
   interaction: ChatInputCommandInteraction
@@ -31,7 +32,8 @@ function addCommand({
   handlers.set(command.name, execute);
 }
 
-addCommand(makeAnnouncement);
+addCommand(linkMinecraft);
+addCommand(claimFlag);
 
 const rest = new REST().setToken(config.botToken);
 
