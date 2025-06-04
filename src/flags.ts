@@ -22,3 +22,12 @@ export function flagQuery(flag: Flag) {
   const mask = 1 << Flags[flag];
   return `(flags & ${mask} != 0)`;
 }
+
+export function extractFlags(mask: number): Flag[] {
+  return Object.keys(Flags)
+    .map((it) => it as Flag)
+    .filter((flag) => {
+      const flagMask = 1 << Flags[flag];
+      return (flagMask & mask) !== 0;
+    });
+}

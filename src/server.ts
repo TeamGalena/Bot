@@ -1,6 +1,10 @@
 import { server as createServer } from "@hapi/hapi";
-import { loadFlaggedUuids, loadSupporterUuids } from "./database";
-import { isFlag } from "./flags";
+import {
+  getLinkByUuid,
+  loadFlaggedUuids,
+  loadSupporterUuids,
+} from "./database";
+import { extractFlags, isFlag } from "./flags";
 import logger from "./logger";
 
 const server = createServer({ port: 3000 });
@@ -36,6 +40,26 @@ server.route({
     }
 
     return await loadFlaggedUuids(flag);
+  },
+});
+
+server.route({
+  method: "GET",
+  path: `/api/{uuid}`,
+  handler: async (req, tools) => {
+    const uuid = req.params.uuid?.replaceAll(/[-_]/g, "");
+    const link = await getLinkByUuid(uuid);
+    if (!link) {
+      return tools
+        .response({
+          message: `unknown uuid '${uuid}'`,
+        })
+        .code(404);
+    }
+
+    const flags = extractFlags(link.flags);
+    const { rank } = link;
+    return { flags, rank };
   },
 });
 

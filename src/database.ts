@@ -41,6 +41,10 @@ async function getLinkByDiscordId(discordId: string) {
   ]);
 }
 
+export async function getLinkByUuid(uuid: string) {
+  return await db.get<LinkEntry>("SELECT * FROM Link WHERE uuid = ?", [uuid]);
+}
+
 async function updateLink(existing: LinkEntry, values: InputLinkEntry) {
   const next = { ...existing, ...values };
   if (
