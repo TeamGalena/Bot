@@ -1,7 +1,7 @@
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
 import { UserError } from "./error";
-import { flagQuery, withFlag, type Flag } from "./flags";
+import { flagQuery, withFlags, type Flag } from "./flags";
 import logger from "./logger";
 
 const db = await open({
@@ -92,9 +92,9 @@ async function requireLink(discordId: string) {
   throw new UserError("you have not linked your minecraft account yet");
 }
 
-export async function addFlag(discordId: string, flag: Flag) {
+export async function addFlags(discordId: string, ...flags: Flag[]) {
   const link = await requireLink(discordId);
-  await updateLink(link, withFlag(link, flag));
+  await updateLink(link, withFlags(link, ...flags));
 }
 
 export async function updateRank(discordId: string, rank: number) {

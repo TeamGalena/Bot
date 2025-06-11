@@ -7,9 +7,17 @@ const Flags = {
 
 export type Flag = keyof typeof Flags;
 
-export function withFlag(link: LinkEntry, flag: Flag): LinkEntry {
-  const mask = 1 << Flags[flag];
-  const flags = link.flags | mask;
+export const SUPPORTER_FLAGS: Flag[] = ["pride"];
+
+export function createFlags(...values: Flag[]) {
+  if (values.length === 0) return 0;
+  const masks = values.map((it) => 1 << Flags[it]);
+  return masks.reduce((a, b) => a | b);
+}
+
+export function withFlags(link: LinkEntry, ...added: Flag[]): LinkEntry {
+  if (added.length === 0) return link;
+  const flags = link.flags | createFlags(...added);
   return { ...link, flags };
 }
 

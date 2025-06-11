@@ -3,7 +3,13 @@ import {
   GuildMemberRoleManager,
   SlashCommandBuilder,
 } from "discord.js";
-import { loadSupporterRoles, persistLink, updateRank } from "../database";
+import {
+  addFlags,
+  loadSupporterRoles,
+  persistLink,
+  updateRank,
+} from "../database";
+import { SUPPORTER_FLAGS } from "../flags";
 import queryUUID from "../mojang";
 
 const linkTypes = {
@@ -73,6 +79,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (interaction.options.getSubcommand(true) === "refresh") {
     await updateRank(interaction.user.id, rank);
+    if (rank > 0) await addFlags(interaction.user.id, ...SUPPORTER_FLAGS);
 
     if (interaction.isRepliable()) {
       await interaction.editReply("Your supporter status was refreshed!");
@@ -83,6 +90,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     );
 
     await persistLink({ discordId: interaction.user.id, uuid, rank });
+    if (rank > 0) await addFlags(interaction.user.id, ...SUPPORTER_FLAGS);
 
     if (interaction.isRepliable()) {
       await interaction.editReply(

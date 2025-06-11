@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { addFlag } from "../database";
+import { addFlags } from "../database";
 import { UserError } from "../error";
 import { type Flag } from "../flags";
 
@@ -37,7 +37,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     throw new UserError("there is no special tophat available right now");
   }
 
-  await addFlag(interaction.user.id, flag);
+  await addFlags(interaction.user.id, flag);
 
   if (interaction.isRepliable()) {
     await interaction.editReply(`You claimed the ${flag} tophat!`);
