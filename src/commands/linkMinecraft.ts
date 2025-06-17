@@ -71,7 +71,7 @@ async function getRoles(interaction: ChatInputCommandInteraction) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  await interaction.deferReply();
+  await interaction.deferReply({ ephemeral: true });
 
   const roles = await getRoles(interaction);
 

@@ -28,7 +28,7 @@ function availableFlag(date: Date) {
 }
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  await interaction.deferReply();
+  await interaction.deferReply({ ephemeral: true });
 
   const now = new Date();
   const flag = availableFlag(now);
