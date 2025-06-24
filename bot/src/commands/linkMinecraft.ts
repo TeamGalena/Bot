@@ -1,16 +1,16 @@
 import {
-  ChatInputCommandInteraction,
-  GuildMemberRoleManager,
-  SlashCommandBuilder,
-} from "discord.js";
-import {
   addFlags,
   loadSupporterRoles,
   persistLink,
   updateRank,
-} from "../database";
+} from "@teamgalena/shared/database";
+import {
+  ChatInputCommandInteraction,
+  GuildMemberRoleManager,
+  SlashCommandBuilder,
+} from "discord.js";
+import queryUUID from "../../../shared/src/mojang";
 import { SUPPORTER_FLAGS } from "../flags";
-import queryUUID from "../mojang";
 
 const linkTypes = {
   UUID: "uuid",

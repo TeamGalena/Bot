@@ -8,9 +8,9 @@ import {
   type Interaction,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord.js";
+import { UserError } from "../../../shared/src/error";
+import logger from "../../../shared/src/logger";
 import { config } from "../config";
-import { UserError } from "../error";
-import logger from "../logger";
 import * as claimFlag from "./claimFlag";
 import * as linkMinecraft from "./linkMinecraft";
 

@@ -1,11 +1,11 @@
 import { server as createServer } from "@hapi/hapi";
+import logger from "../../shared/src/logger";
 import {
   getLinkByUuid,
   loadFlaggedUuids,
   loadSupporterUuids,
 } from "./database";
 import { extractFlags, isFlag } from "./flags";
-import logger from "./logger";
 
 const server = createServer({ port: 3000 });
 

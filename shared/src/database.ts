@@ -1,16 +1,18 @@
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
+import { flagQuery, withFlags, type Flag } from "../../bot/src/flags";
 import { UserError } from "./error";
-import { flagQuery, withFlags, type Flag } from "./flags";
 import logger from "./logger";
 
+export async function migrateDatabase() {
+  await db.migrate();
+  logger.info("migrated database");
+}
+
 const db = await open({
-  filename: "data/database.db",
+  filename: "../data/database.db",
   driver: sqlite3.Database,
 });
-
-await db.migrate();
-logger.info("migrated database");
 
 export type LinkEntry = {
   discordId: string;

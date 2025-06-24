@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { UserError } from "../../../shared/src/error";
 import { addFlags } from "../database";
-import { UserError } from "../error";
 import { type Flag } from "../flags";
 
 type DatePredicate = (date: Date) => boolean;
