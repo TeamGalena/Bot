@@ -12,9 +12,12 @@ const migrationsPath = optionalEnv("MIGRATIONS_PATH") ?? "/migrations";
 const dataPath = optionalEnv("DATA_PATH") ?? "/data";
 
 export async function migrateDatabase() {
+  logger.debug(`searching for migrations in ${migrationsPath}`);
   await db.migrate({ migrationsPath });
   logger.info("migrated database");
 }
+
+logger.debug(`Loading database in ${dataPath}`);
 
 const db = await open({
   filename: join(dataPath, "database.db"),

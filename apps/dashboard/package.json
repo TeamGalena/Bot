@@ -5,6 +5,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "dotenvx run --convention=flow -- astro preview",
+    "start": "dotenvx run --convention=flow -- bun run dist/server/entry.mjs",
     "astro": "astro"
   },
   "dependencies": {
