@@ -1,6 +1,6 @@
 import { Discord, generateState } from "arctic";
 import type { APIContext } from "astro";
-import requireEnv from "./env";
+import { requireEnv } from "./env";
 
 // TODO: Update redirect URI
 const discord = new Discord(

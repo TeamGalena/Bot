@@ -1,10 +1,13 @@
+import { containsAdminRole } from "@teamgalena/shared/database";
 import type { OAuth2Tokens } from "arctic";
 import type { APIContext } from "astro";
-import { validateLogin } from "../../lib/server/discord";
-import requireEnv from "../../lib/server/env";
+import { generateLoginRedirect, validateLogin } from "../../lib/server/discord";
+import { optionalEnv, requireEnv } from "../../lib/server/env";
 import { createToken, login, type Token } from "../../lib/server/session";
 
 const GUILD_ID = requireEnv("GUILD_ID");
+const EXPIRES_AFTER =
+  Number.parseInt(optionalEnv("JWT_EXPIRES_AFTER")) || 1000 * 60 * 60 * 24;
 
 type DiscordUser = {
   id: string;
@@ -31,24 +34,20 @@ export async function GET(context: APIContext): Promise<Response> {
   const code = context.url.searchParams.get("code");
   const state = context.url.searchParams.get("state");
 
-  if (storedState === null || code === null || state === null) {
-    return new Response("Please restart the process.", {
-      status: 400,
-    });
-  }
-  if (storedState !== state) {
-    return new Response("Please restart the process.", {
-      status: 400,
-    });
+  if (
+    storedState === null ||
+    code === null ||
+    state === null ||
+    storedState !== state
+  ) {
+    return generateLoginRedirect(context);
   }
 
   let tokens: OAuth2Tokens;
   try {
     tokens = await validateLogin(code);
   } catch (e) {
-    return new Response("Please restart the process.", {
-      status: 400,
-    });
+    return generateLoginRedirect(context);
   }
 
   const { user, roles } = await request<GuildMember>(
@@ -56,9 +55,15 @@ export async function GET(context: APIContext): Promise<Response> {
     tokens
   );
 
-  console.log(roles);
+  const isAdmin = await containsAdminRole(roles);
 
-  const expiresAt = Date.now() + 1000 * 60 * 60 * 24 * 5;
+  if (!isAdmin) {
+    return new Response("Only moderators are allowed to access our dashboard", {
+      status: 403,
+    });
+  }
+
+  const expiresAt = Date.now() + EXPIRES_AFTER;
   const token: Token = { expiresAt, user };
   login(context, createToken(token), new Date(expiresAt));
 

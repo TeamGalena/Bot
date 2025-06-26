@@ -1,11 +1,15 @@
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
-import { flagQuery, withFlags, type Flag } from "../../bot/src/flags";
+import { withFlags, type Flag } from "../../bot/src/flags";
 import { UserError } from "./error";
 import logger from "./logger";
+import type { Page, Paginated, Pagination } from "./paginated";
+import { repeat } from "./util";
 
 export async function migrateDatabase() {
-  await db.migrate();
+  await db.migrate({
+    migrationsPath: "../migrations",
+  });
   logger.info("migrated database");
 }
 
@@ -14,14 +18,19 @@ const db = await open({
   driver: sqlite3.Database,
 });
 
-export type LinkEntry = {
+type InputLinkEntry = {
   discordId: string;
   uuid: string;
   rank: number;
-  flags: number;
+  flags?: number;
 };
 
-type InputLinkEntry = Omit<LinkEntry, "flags"> & Partial<LinkEntry>;
+export type LinkEntry = InputLinkEntry & {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  flags: number;
+};
 
 export type RoleEntry = {
   id: string;
@@ -43,8 +52,57 @@ async function getLinkByDiscordId(discordId: string) {
   ]);
 }
 
+function encodeCursor(entry: LinkEntry) {
+  return entry.id.toString();
+}
+
+function createPage<T>(items: Paginated<T>[], size: number): Page<T> {
+  // TODO
+  const total = size;
+
+  if (items.length > size) {
+    return {
+      items: items.slice(1),
+      pageInfo: {
+        size,
+        total,
+        next: items[items.length - 1].cursor,
+      },
+    };
+  } else {
+    return {
+      items,
+      pageInfo: {
+        total,
+        size: items.length,
+      },
+    };
+  }
+}
+
+export async function getLinks(
+  pagination: Pagination
+): Promise<Page<LinkEntry>> {
+  const afterId = Number.parseInt(pagination.after ?? "-1");
+
+  const entries = await db.all<LinkEntry[]>(
+    `SELECT * FROM Link WHERE id > ? ORDER BY id ASC LIMIT ?`,
+    afterId,
+    pagination.size + 1
+  );
+
+  const items = entries.map((value) => ({
+    value,
+    cursor: encodeCursor(value),
+  }));
+
+  return createPage(items, pagination.size);
+}
+
 export async function getLinkByUuid(uuid: string) {
-  return await db.get<LinkEntry>("SELECT * FROM Link WHERE uuid = ?", [uuid]);
+  return await db.get<LinkEntry>("SELECT * FROM Link WHERE uuid = ? LIMIT 1", [
+    uuid,
+  ]);
 }
 
 async function updateLink(existing: LinkEntry, values: InputLinkEntry) {
@@ -104,21 +162,22 @@ export async function updateRank(discordId: string, rank: number) {
   await updateLink(link, { ...link, rank });
 }
 
-export async function loadSupporterUuids(aboveRank: number) {
-  const entries = await db.all<LinkEntry[]>(
-    "SELECT uuid FROM Link WHERE rank >= ? LIMIT 100",
-    [aboveRank]
-  );
-  return entries.map((it) => it.uuid);
-}
-
-export async function loadFlaggedUuids(flag: Flag) {
-  const entries = await db.all<LinkEntry[]>(
-    `SELECT uuid FROM Link WHERE ${flagQuery(flag)}`
-  );
-  return entries.map((it) => it.uuid);
-}
-
 export async function loadSupporterRoles() {
   return await db.all<RoleEntry[]>("SELECT * FROM Role ORDER BY rank DESC");
+}
+
+export async function containsAdminRole(roles: string[]) {
+  const { count } = await db.get(
+    `SELECT COUNT(*) count FROM Role WHERE isAdmin = TRUE AND id IN (${repeat(
+      "?",
+      roles.length
+    )})`,
+    ...roles
+  );
+
+  return count > 0;
+}
+
+export async function truncateLinks() {
+  await db.run(`DELETE FROM Link WHERE 1`);
 }

@@ -15,9 +15,10 @@ const authenticate = defineMiddleware((context, next) => {
   return next();
 });
 
-const authorize = defineMiddleware(async (context, next) => {
+const authorize = defineMiddleware((context, next) => {
   if (context.locals.user || context.routePattern.startsWith("/api/"))
     return next();
+
   return generateLoginRedirect(context);
 });
 

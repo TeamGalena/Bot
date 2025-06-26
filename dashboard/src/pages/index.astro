@@ -1,19 +1,11 @@
 ---
-import { loadSupporterUuids } from "@teamgalena/shared/database";
+import { getLinks } from "@teamgalena/shared/database";
+import Layout from "./components/Layout.astro";
+import Page from "./components/Page.astro";
 
-const uuid = await loadSupporterUuids(0);
+const page = await getLinks({ size: 100 });
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Galena Dashboard</title>
-  </head>
-  <body>
-    <h1>Astro</h1>
-    <p>{uuid.length} supporters have linked their minecraft account</p>
-  </body>
-</html>
+<Layout>
+  <Page page={page} />
+</Layout>

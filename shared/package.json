@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./models": "./src/models.ts",
     "./database": "./src/database.ts",
     "./error": "./src/error.ts",
     "./logger": "./src/logger.ts",

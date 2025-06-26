@@ -1,6 +1,6 @@
 import type { APIContext, AstroCookieSetOptions } from "astro";
 import jwt from "jsonwebtoken";
-import requireEnv from "./env";
+import { requireEnv } from "./env";
 import type { User } from "./user";
 
 const COOKIE_KEY = "galena-session";

@@ -1,0 +1,36 @@
+---
+
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Galena Dashboard</title>
+  </head>
+  <body>
+    <main>
+      <slot />
+    </main>
+  </body>
+
+  <style is:global>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+
+      background: #1e2129;
+      color: #ddd;
+      font-family: sans-serif;
+    }
+
+    main {
+      padding-top: 1em;
+      display: grid;
+      justify-content: center;
+    }
+  </style>
+</html>
