@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "dotenvx run --convention=flow -- astro preview",
     "astro": "astro"
   },
   "dependencies": {

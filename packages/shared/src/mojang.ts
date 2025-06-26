@@ -7,9 +7,9 @@ type Response = {
 };
 
 export default async function queryUUID(username: string) {
-  // TODO escape?
+  const encoded = encodeURIComponent(username);
   const response = await fetch(
-    `https://api.minecraftservices.com/minecraft/profile/lookup/name/${username}`,
+    `https://api.minecraftservices.com/minecraft/profile/lookup/name/${encoded}`,
     {
       headers: {
         Accept: "application/json",

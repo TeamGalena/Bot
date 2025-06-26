@@ -2,11 +2,10 @@ import { requireEnv } from "@teamgalena/shared/config";
 import { Discord, generateState } from "arctic";
 import type { APIContext } from "astro";
 
-// TODO: Update redirect URI
 const discord = new Discord(
   requireEnv("DISCORD_CLIENT_ID"),
   requireEnv("DISCORD_CLIENT_SECRET"),
-  "http://localhost:4321/api/login"
+  `${requireEnv("BASE_URL")}/api/login`
 );
 
 export function generateLoginRedirect(context: APIContext) {

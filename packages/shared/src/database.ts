@@ -59,10 +59,11 @@ function encodeCursor(entry: LinkEntry) {
   return entry.id.toString();
 }
 
-function createPage<T>(items: Paginated<T>[], size: number): Page<T> {
-  // TODO
-  const total = size;
-
+function createPage<T>(
+  items: Paginated<T>[],
+  size: number,
+  total: number
+): Page<T> {
   if (items.length > size) {
     return {
       items: items.slice(1),
@@ -88,6 +89,8 @@ export async function getLinks(
 ): Promise<Page<LinkEntry>> {
   const afterId = Number.parseInt(pagination.after ?? "-1");
 
+  const { total } = await db.get(`SELECT COUNT(*) total FROM Link`);
+
   const entries = await db.all<LinkEntry[]>(
     `SELECT * FROM Link WHERE id > ? ORDER BY id ASC LIMIT ?`,
     afterId,
@@ -99,7 +102,7 @@ export async function getLinks(
     cursor: encodeCursor(value),
   }));
 
-  return createPage(items, pagination.size);
+  return createPage(items, pagination.size, total);
 }
 
 export async function getLinkByUuid(uuid: string) {
