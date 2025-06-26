@@ -4,13 +4,13 @@ import {
   persistLink,
   updateRank,
 } from "@teamgalena/shared/database";
+import { SUPPORTER_FLAGS } from "@teamgalena/shared/flags";
+import queryUUID from "@teamgalena/shared/mojang";
 import {
   ChatInputCommandInteraction,
   GuildMemberRoleManager,
   SlashCommandBuilder,
 } from "discord.js";
-import queryUUID from "../../../shared/src/mojang";
-import { SUPPORTER_FLAGS } from "../flags";
 
 const linkTypes = {
   UUID: "uuid",

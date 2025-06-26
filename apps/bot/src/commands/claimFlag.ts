@@ -1,7 +1,7 @@
+import { addFlags } from "@teamgalena/shared/database";
+import { UserError } from "@teamgalena/shared/error";
+import { type Flag } from "@teamgalena/shared/flags";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { UserError } from "../../../shared/src/error";
-import { addFlags } from "../database";
-import { type Flag } from "../flags";
 
 type DatePredicate = (date: Date) => boolean;
 

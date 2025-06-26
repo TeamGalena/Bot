@@ -1,7 +1,7 @@
 import { server as createServer } from "@hapi/hapi";
 import { getLinkByUuid } from "@teamgalena/shared/database";
-import logger from "../../shared/src/logger";
-import { extractFlags } from "./flags";
+import { extractFlags } from "@teamgalena/shared/flags";
+import logger from "@teamgalena/shared/logger";
 
 const server = createServer({ port: 3000 });
 

@@ -1,3 +1,5 @@
+import { UserError } from "@teamgalena/shared/error";
+import logger from "@teamgalena/shared/logger";
 import {
   ChatInputCommandInteraction,
   Client,
@@ -8,8 +10,6 @@ import {
   type Interaction,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord.js";
-import { UserError } from "../../../shared/src/error";
-import logger from "../../../shared/src/logger";
 import { config } from "../config";
 import * as claimFlag from "./claimFlag";
 import * as linkMinecraft from "./linkMinecraft";

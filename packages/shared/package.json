@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./flags": "./src/flags.ts",
     "./models": "./src/models.ts",
     "./database": "./src/database.ts",
     "./error": "./src/error.ts",

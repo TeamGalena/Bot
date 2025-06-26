@@ -5,5 +5,11 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  }
 }

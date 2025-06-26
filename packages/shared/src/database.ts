@@ -1,14 +1,14 @@
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
-import { withFlags, type Flag } from "../../bot/src/flags";
 import { UserError } from "./error";
+import { withFlags, type Flag } from "./flags";
 import logger from "./logger";
 import type { Page, Paginated, Pagination } from "./paginated";
 import { repeat } from "./util";
 
 export async function migrateDatabase() {
   await db.migrate({
-    migrationsPath: "../migrations",
+    migrationsPath: "../../migrations",
   });
   logger.info("migrated database");
 }

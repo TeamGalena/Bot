@@ -34,7 +34,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.GITHUB_REPO }}
+          images: ${{ env.REGISTRY }}/${{ env.GITHUB_REPO }}-dashboard
           tags: |
             type=raw,value=latest
             type=raw,value=stable,enable=${{ github.event_name == 'release' }}
@@ -44,6 +44,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
+          file: apps/dashboard/Dockerfile
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
