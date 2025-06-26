@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./config": "./src/config.ts",
     "./flags": "./src/flags.ts",
     "./models": "./src/models.ts",
     "./database": "./src/database.ts",
@@ -11,7 +12,7 @@
     "./mojang": "./src/mojang.ts"
   },
   "scripts": {
-    "type-check": "tsc",
+    "type-check": "tsc --noEmit",
     "lint": "eslint"
   },
   "devDependencies": {
@@ -20,6 +21,7 @@
     "typescript-eslint": "^8.33.0"
   },
   "dependencies": {
+    "@teamgalena/configs": "workspace:*",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
     "chalk": "^5.3.0"

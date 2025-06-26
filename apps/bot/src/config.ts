@@ -1,14 +1,7 @@
-import dotenv from "dotenv";
+import dotenv from "@dotenvx/dotenvx";
+import { requireEnv } from "@teamgalena/shared/config";
 
-dotenv.config();
-
-class ConfigurationError extends Error {}
-
-const requireEnv = (key: string) => {
-  const value = process.env[key];
-  if (value) return value;
-  throw new ConfigurationError(`environment variable '${key} missing'`);
-};
+dotenv.config({ convention: "flow" });
 
 export const config = {
   applicationId: requireEnv("APPLICATION_ID"),

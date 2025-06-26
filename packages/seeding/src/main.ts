@@ -1,12 +1,15 @@
+import dotenv from "@dotenvx/dotenvx";
 import { faker } from "@faker-js/faker";
 import {
   migrateDatabase,
   persistLink,
   truncateLinks,
 } from "@teamgalena/shared/database";
+import { createFlags, type Flag } from "@teamgalena/shared/flags";
 import logger from "@teamgalena/shared/logger";
 import parseArgs from "arg";
-import { createFlags, Flag } from "../../bot/src/flags";
+
+dotenv.config({ convention: "flow" });
 
 const FLAGS: Flag[] = ["anniversary", "pride"];
 

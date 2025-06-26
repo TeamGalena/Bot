@@ -1,8 +1,8 @@
+import { optionalEnv, requireEnv } from "@teamgalena/shared/config";
 import { containsAdminRole } from "@teamgalena/shared/database";
 import type { OAuth2Tokens } from "arctic";
 import type { APIContext } from "astro";
 import { generateLoginRedirect, validateLogin } from "../../lib/server/discord";
-import { optionalEnv, requireEnv } from "../../lib/server/env";
 import { createToken, login, type Token } from "../../lib/server/session";
 
 const GUILD_ID = requireEnv("GUILD_ID");

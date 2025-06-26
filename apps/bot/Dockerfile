@@ -25,7 +25,7 @@ WORKDIR /app
 
 COPY --from=install /pruned/node_modules node_modules
 COPY --from=builder /app/out/full ./
-COPY migrations migrations
+COPY migrations /migrations
 
 # run the app
 EXPOSE 3000/tcp

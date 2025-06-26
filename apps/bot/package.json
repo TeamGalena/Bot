@@ -5,7 +5,7 @@
   "scripts": {
     "start": "bun src/app.ts",
     "dev": "bun --watch src/app.ts",
-    "type-check": "tsc",
+    "type-check": "tsc --noEmit",
     "lint": "eslint"
   },
   "devDependencies": {
@@ -18,9 +18,10 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@teamgalena/shared": "workspace:*",
+    "@dotenvx/dotenvx": "^1.45.1",
     "@hapi/hapi": "^21.4.0",
-    "discord.js": "^14.16.3",
-    "dotenv": "^16.4.5"
+    "@teamgalena/shared": "workspace:*",
+    "@teamgalena/configs": "workspace:*",
+    "discord.js": "^14.16.3"
   }
 }

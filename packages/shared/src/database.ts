@@ -1,20 +1,23 @@
+import { join } from "path";
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
+import { optionalEnv } from "./config";
 import { UserError } from "./error";
 import { withFlags, type Flag } from "./flags";
 import logger from "./logger";
 import type { Page, Paginated, Pagination } from "./paginated";
 import { repeat } from "./util";
 
+const migrationsPath = optionalEnv("MIGRATIONS_PATH") ?? "/migrations";
+const dataPath = optionalEnv("DATA_PATH") ?? "/data";
+
 export async function migrateDatabase() {
-  await db.migrate({
-    migrationsPath: "../../migrations",
-  });
+  await db.migrate({ migrationsPath });
   logger.info("migrated database");
 }
 
 const db = await open({
-  filename: "../data/database.db",
+  filename: join(dataPath, "database.db"),
   driver: sqlite3.Database,
 });
 
