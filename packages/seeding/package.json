@@ -1,0 +1,17 @@
+{
+  "name": "@teamgalena/seeding",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "eslint",
+    "run": "bun run src/main.ts"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.45.1",
+    "@faker-js/faker": "^9.8.0",
+    "@teamgalena/shared": "workspace:*",
+    "@teamgalena/configs": "workspace:*",
+    "arg": "^5.0.2"
+  }
+}

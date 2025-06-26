@@ -1,0 +1,11 @@
+---
+import { getLinks } from "@teamgalena/shared/database";
+import Layout from "./components/Layout.astro";
+import Page from "./components/Page.astro";
+
+const page = await getLinks({ size: 100 });
+---
+
+<Layout>
+  <Page page={page} />
+</Layout>

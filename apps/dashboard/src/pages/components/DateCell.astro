@@ -1,0 +1,12 @@
+---
+const { value } = Astro.props as { value: Date | string | number };
+
+const date = new Date(value);
+
+const display = date.toLocaleDateString();
+const tooltip = date.toLocaleTimeString();
+---
+
+<span title={tooltip}>
+  {display}
+</span>
