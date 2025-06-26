@@ -1,9 +1,12 @@
+import type { LinkEntry } from "@teamgalena/shared/database";
 import { expect, test } from "bun:test";
-import type { LinkEntry } from "../src/database";
 import { flagQuery, withFlags } from "../src/flags";
 
 function createLinkEntry(values: Partial<LinkEntry> = {}): LinkEntry {
   return {
+    id: -1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     discordId: "test-id",
     flags: 0b00000000,
     rank: 99,

@@ -20,12 +20,12 @@ RUN cd /temp && bun install --filter bot --frozen-lockfile --production
 
 # copy production dependencies and source code into final image
 FROM base AS release
-WORKDIR /usr/src
+WORKDIR /app
 
 COPY --from=install /temp/node_modules node_modules
-COPY --from=builder /app/out/full/bot/src src
-COPY migrations migrations
+COPY --from=builder /app/out/full/apps/bot/src src
+COPY migrations ../migrations
 
 # run the app
 EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run", "app/src/app.ts" ]
+ENTRYPOINT [ "bun", "run", "src/app.ts" ]

@@ -26,7 +26,7 @@ type InputLinkEntry = {
 };
 
 export type LinkEntry = InputLinkEntry & {
-  id: string;
+  id: number;
   createdAt: string;
   updatedAt: string;
   flags: number;

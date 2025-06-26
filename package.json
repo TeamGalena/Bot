@@ -3,9 +3,7 @@
   "private": true,
   "packageManager": "bun@1.2.17",
   "workspaces": [
-    "shared",
-    "bot",
-    "dashboard",
-    "seeding"
+    "apps/*",
+    "packages/*"
   ]
 }
