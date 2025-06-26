@@ -14,7 +14,7 @@ RUN turbo prune @teamgalena/bot --docker
 # install with --production (exclude devDependencies)
 FROM base AS install
 
-WORKDIR pruned
+WORKDIR /pruned
 
 COPY --from=builder /app/out/json/ .
 RUN bun install --frozen-lockfile --production
