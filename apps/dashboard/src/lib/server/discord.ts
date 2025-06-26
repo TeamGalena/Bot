@@ -1,11 +1,19 @@
 import { requireEnv } from "@teamgalena/shared/config";
+import logger from "@teamgalena/shared/logger";
 import { Discord, generateState } from "arctic";
 import type { APIContext } from "astro";
 
+const clientId = requireEnv("DISCORD_CLIENT_ID");
+const redirectUrl = `${requireEnv("BASE_URL")}/api/login`;
+
+logger.debug(
+  `Setting up discord OAuth for client id ${clientId}, redirecting to ${redirectUrl}`
+);
+
 const discord = new Discord(
-  requireEnv("DISCORD_CLIENT_ID"),
+  clientId,
   requireEnv("DISCORD_CLIENT_SECRET"),
-  `${requireEnv("BASE_URL")}/api/login`
+  redirectUrl
 );
 
 export function generateLoginRedirect(context: APIContext) {
