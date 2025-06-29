@@ -1,7 +1,11 @@
 class ConfigurationError extends Error {}
 
 export function requireEnv(key: string) {
-  const value = process.env[key];
+  const env =
+    process.env.NODE_ENV === "development" ? import.meta.env : process.env;
+
+  const value = env[key];
+
   if (value) return value;
   throw new ConfigurationError(`Missing environment variable '${key}'`);
 }

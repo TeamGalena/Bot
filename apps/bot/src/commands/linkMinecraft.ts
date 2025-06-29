@@ -6,7 +6,7 @@ import {
 } from "@teamgalena/shared/database";
 import { UserError } from "@teamgalena/shared/error";
 import { SUPPORTER_FLAGS } from "@teamgalena/shared/flags";
-import queryUUID from "@teamgalena/shared/mojang";
+import { queryUUID } from "@teamgalena/shared/mojang";
 import {
   ChatInputCommandInteraction,
   GuildMemberRoleManager,

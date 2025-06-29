@@ -17,6 +17,7 @@ const { page } = Astro.props as { page: Page<LinkEntry> };
         <th>Discord-ID</th>
         <th>Created</th>
         <th>Updated</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -30,6 +31,17 @@ const { page } = Astro.props as { page: Page<LinkEntry> };
             </td>
             <td>
               <DateCell value={value.updatedAt} />
+            </td>
+            <td>
+              <form>
+                <input type="hidden" name="uuid" value={value.uuid} />
+                <button hx-post="/edit" hx-target="#popup">
+                  ✏️
+                </button>
+                <button hx-post="/delete" hx-target="#popup">
+                  🗑️
+                </button>
+              </form>
             </td>
           </tr>
         ))
@@ -45,6 +57,7 @@ const { page } = Astro.props as { page: Page<LinkEntry> };
 
   table {
     border-collapse: collapse;
+    font-size: 1.2em;
   }
 
   th {
@@ -58,6 +71,22 @@ const { page } = Astro.props as { page: Page<LinkEntry> };
 
     td {
       padding: 0.25em 0.5em;
+
+      button {
+        background: none;
+        border: none;
+        outline: none;
+        cursor: pointer;
+
+        font-size: 1.25em;
+
+        transition: background 0.2s ease;
+        border-radius: 0.25em;
+
+        &:hover {
+          background: #fff3;
+        }
+      }
     }
   }
 </style>
