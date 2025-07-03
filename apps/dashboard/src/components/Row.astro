@@ -2,8 +2,11 @@
 import DateCell from "@/components/DateCell.astro";
 import Form from "@/components/Form.astro";
 import type { LinkEntry } from "@teamgalena/shared/database";
+import { extractFlags } from "@teamgalena/shared/flags";
 
 const { value } = Astro.props as { value: LinkEntry };
+
+const flags = extractFlags(value.flags);
 ---
 
 <td>{value.uuid}</td>
@@ -14,10 +17,34 @@ const { value } = Astro.props as { value: LinkEntry };
 <td>
   <DateCell value={value.updatedAt} />
 </td>
+<td>{value.rank}</td>
 <td>
-  <Form>
-    <input type="hidden" name="discordId" value={value.discordId} />
-    <button hx-post="/dialog/edit" hx-target="#popup">✏️</button>
-    <button hx-post="/dialog/delete" hx-target="#popup">🗑️</button>
+  <ul class="flags">
+    {flags.map((it) => <li>{it}</li>)}
+  </ul>
+</td>
+<td class="actions">
+  <Form hx-target="#popup">
+    <input hidden name="discordId" value={value.discordId} />
+    <button title="Edit" hx-post="/dialog/edit">✏️</button>
+    <button title="Delete" hx-post="/dialog/delete">🗑️</button>
   </Form>
 </td>
+
+<style scoped>
+  .flags {
+    display: flex;
+    max-width: 300px;
+    flex-wrap: wrap;
+    gap: 0.25em;
+    justify-content: left;
+    align-items: center;
+    list-style: none;
+
+    li {
+      background: #fff3;
+      border-radius: 9999px;
+      padding: 0.25em 0.5em;
+    }
+  }
+</style>

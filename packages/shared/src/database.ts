@@ -3,7 +3,7 @@ import { open } from "sqlite";
 import sqlite3 from "sqlite3";
 import { optionalEnv } from "./config";
 import { UserError } from "./error";
-import { withFlags, type Flag } from "./flags";
+import { createFlags, withFlags, type Flag } from "./flags";
 import logger from "./logger";
 import type { Page, Paginated, Pagination } from "./paginated";
 import { repeat } from "./util";
@@ -24,11 +24,11 @@ const db = await open({
   driver: sqlite3.Database,
 });
 
-type InputLinkEntry = {
+export type InputLinkEntry = {
   discordId: string;
   uuid: string;
   rank: number;
-  flags?: number;
+  flags?: number | Flag[];
 };
 
 export type LinkEntry = InputLinkEntry & {
@@ -109,7 +109,7 @@ export async function getLinks(
   const { total } = await db.get(`SELECT COUNT(*) total FROM Link`);
 
   const entries = await db.all<LinkEntry[]>(
-    `SELECT * FROM Link WHERE id > ? ORDER BY id ASC LIMIT ?`,
+    `SELECT * FROM Link WHERE id >= ? ORDER BY id ASC LIMIT ?`,
     afterId,
     pagination.size + 1
   );
@@ -131,6 +131,7 @@ export async function getLinkByUuid(uuid: string) {
 export const updateLink = wrapError(
   async (existing: LinkEntry, values: InputLinkEntry) => {
     const next = { ...existing, ...values };
+    next.flags = resolveFlags(next.flags);
     if (
       next.rank === existing.rank &&
       next.uuid === existing.uuid &&
@@ -141,7 +142,7 @@ export const updateLink = wrapError(
     }
 
     await db.run(
-      "UPDATE Link SET uuid = ?, rank = ?, flags = ?, updatedAt = date('now') WHERE discordId = ?",
+      "UPDATE Link SET uuid = ?, rank = ?, flags = ?, updatedAt = datetime('now') WHERE discordId = ?",
       [next.uuid, next.rank, next.flags, next.discordId]
     );
 
@@ -152,10 +153,14 @@ export const updateLink = wrapError(
   }
 );
 
+function resolveFlags(flags: InputLinkEntry["flags"]): number {
+  return typeof flags === "number" ? flags : createFlags(...(flags ?? []));
+}
+
 const insertLink = wrapError(async (link: InputLinkEntry) => {
   await db.run(
     "INSERT INTO Link (discordId, uuid, rank, flags) VALUES (?, ?, ?, ?)",
-    [link.discordId, link.uuid, link.rank, link.flags ?? 0]
+    [link.discordId, link.uuid, link.rank, resolveFlags(link.flags)]
   );
 });
 

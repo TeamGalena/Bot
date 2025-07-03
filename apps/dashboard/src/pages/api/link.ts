@@ -3,12 +3,12 @@ import {
   deleteLinkByDiscordId,
   getLinkByDiscordId,
   updateLink,
-  type LinkEntry,
+  type InputLinkEntry,
 } from "@teamgalena/shared/database";
 import type { APIContext } from "astro";
 
 export async function PUT(context: APIContext): Promise<Response> {
-  const body = await getFormData<LinkEntry>(context);
+  const body = await getFormData<InputLinkEntry>(context);
   const existing = await getLinkByDiscordId(body.discordId);
 
   if (!existing) {
@@ -21,7 +21,7 @@ export async function PUT(context: APIContext): Promise<Response> {
 }
 
 export async function DELETE(context: APIContext): Promise<Response> {
-  const body = await getFormData<LinkEntry>(context);
+  const body = await getFormData<InputLinkEntry>(context);
   await deleteLinkByDiscordId(body.discordId);
 
   return new Response(null);

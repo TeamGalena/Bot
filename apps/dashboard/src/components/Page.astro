@@ -2,72 +2,53 @@
 import Row from "@/components/Row.astro";
 import type { LinkEntry } from "@teamgalena/shared/database";
 import type { Page } from "@teamgalena/shared/models";
+import Form from "./Form.astro";
 
 const { page } = Astro.props as { page: Page<LinkEntry> };
+const after = page.pageInfo.next;
 ---
 
-<div>
-  <p class="info">
-    {page.pageInfo.total} supporters have linked their minecraft account
-  </p>
-  <table>
-    <thead>
-      <tr>
-        <th>UUID</th>
-        <th>Discord-ID</th>
-        <th>Created</th>
-        <th>Updated</th>
-        <th></th>
+<Fragment>
+  {
+    page.items.map(({ value }) => (
+      <tr id={`link-${value.discordId}`}>
+        <Row value={value} />
       </tr>
-    </thead>
-    <tbody>
-      {
-        page.items.map(({ value }) => (
-          <tr id={`link-${value.discordId}`}>
-            <Row value={value} />
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
-</div>
-
-<style>
-  .info {
-    text-align: center;
+    ))
   }
-
-  table {
-    border-collapse: collapse;
-    font-size: 1.2em;
+  {
+    after && (
+      <tr class="load-more" id={`replace-${after}`}>
+        <td colspan="7" align="center">
+          <Form
+            hx-post="/partial/page"
+            hx-target={`#replace-${after}`}
+            hx-swap="outerHTML"
+          >
+            <input
+              name="size"
+              type="number"
+              hidden
+              value={page.pageInfo.size}
+            />
+            <input name="after" hidden value={after} />
+            <button type="submit">Load More</button>
+          </Form>
+        </td>
+      </tr>
+    )
   }
+</Fragment>
 
-  th {
-    padding: 0.5em;
-  }
-
-  tbody {
-    tr:nth-child(odd) {
-      background: #fff2;
-    }
+<style scoped>
+  .load-more {
+    background: transparent !important;
 
     td {
-      padding: 0.25em 0.5em;
+      padding-top: 1em;
 
       button {
-        background: none;
-        border: none;
-        outline: none;
-        cursor: pointer;
-
-        font-size: 1.25em;
-
-        transition: background 0.2s ease;
-        border-radius: 0.25em;
-
-        &:hover {
-          background: #fff3;
-        }
+        min-width: 140px;
       }
     }
   }
