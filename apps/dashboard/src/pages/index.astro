@@ -1,9 +1,10 @@
 ---
 import Layout from "@/components/Layout.astro";
 import Page from "@/components/Page.astro";
+import Search from "@/components/Search.astro";
 import { getLinks } from "@teamgalena/shared/database";
 
-const size = 16;
+const size = 2;
 const page = await getLinks({ size });
 ---
 
@@ -11,6 +12,7 @@ const page = await getLinks({ size });
   <p class="info">
     {page.pageInfo.total} supporters have linked their minecraft account
   </p>
+  <Search hx-target="#link-list" pageInfo={page.pageInfo} />
   <table>
     <thead>
       <tr>
@@ -23,7 +25,7 @@ const page = await getLinks({ size });
         <th></th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="link-list">
       <Page page={page} />
     </tbody>
   </table>

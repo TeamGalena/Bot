@@ -1,9 +1,10 @@
 ---
+import FlagsInput from "@/components/FlagsInput.astro";
 import Form from "@/components/Form.astro";
 import { getFormData } from "@/lib/server/csrf";
 import getPlayerName from "@/lib/server/mojang";
 import { getLinkByDiscordId } from "@teamgalena/shared/database";
-import { extractFlags, FLAGS } from "@teamgalena/shared/flags";
+import { extractFlags } from "@teamgalena/shared/flags";
 
 export const partial = true;
 
@@ -47,15 +48,7 @@ const flags = extractFlags(link.flags);
     />
 
     <label for="flags">Flags</label>
-    <select name="flags" multiple size={Math.min(10, FLAGS.length)}>
-      {
-        FLAGS.map((flag) => (
-          <option selected={flags.includes(flag)} value={flag}>
-            {flag}
-          </option>
-        ))
-      }
-    </select>
+    <FlagsInput multiple value={flags} />
 
     <button type="submit">Submit</button>
   </Form>

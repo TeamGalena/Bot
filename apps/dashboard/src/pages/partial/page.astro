@@ -1,14 +1,16 @@
 ---
 import PageComponent from "@/components/Page.astro";
 import { getFormData } from "@/lib/server/csrf";
-import { getLinks } from "@teamgalena/shared/database";
+import { getLinks, type LinkFilter } from "@teamgalena/shared/database";
 import { type Pagination } from "@teamgalena/shared/models";
 
 export const partial = true;
 
-const pagination = await getFormData<Pagination>(Astro);
+type Data = Pagination & LinkFilter;
 
-const page = await getLinks(pagination);
+const { flag, search, ...pagination } = await getFormData<Data>(Astro);
+
+const page = await getLinks(pagination, { flag, search });
 ---
 
 <PageComponent page={page} />

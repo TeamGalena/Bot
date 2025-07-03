@@ -1,0 +1,29 @@
+---
+import type { PageInfo } from "@teamgalena/shared/models";
+import FlagsInput from "./FlagsInput.astro";
+import Form from "./Form.astro";
+
+const { pageInfo, ...props } = Astro.props as { pageInfo: PageInfo };
+---
+
+<Form
+  {...props}
+  class="search"
+  hx-post="/partial/page"
+  hx-trigger="input changed delay:0.3s"
+>
+  <input name="size" type="number" hidden value={pageInfo.size} />
+  <input name="search" placeholder="Search by UUID / Discord ID ..." />
+  <FlagsInput name="flag" />
+</Form>
+
+<style>
+  .search {
+    margin: 2em 0;
+    align-items: center;
+
+    display: grid;
+    grid-template-columns: 1fr 160px;
+    gap: 2em;
+  }
+</style>

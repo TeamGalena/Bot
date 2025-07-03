@@ -18,12 +18,13 @@ const after = page.pageInfo.next;
   }
   {
     after && (
-      <tr class="load-more" id={`replace-${after}`}>
+      <tr class="load-more" id="replace">
         <td colspan="7" align="center">
           <Form
             hx-post="/partial/page"
-            hx-target={`#replace-${after}`}
+            hx-target="closest #replace"
             hx-swap="outerHTML"
+            hx-include="inherit, .search :is(input, select)"
           >
             <input
               name="size"

@@ -3,7 +3,7 @@ import { open } from "sqlite";
 import sqlite3 from "sqlite3";
 import { optionalEnv } from "./config";
 import { UserError } from "./error";
-import { createFlags, withFlags, type Flag } from "./flags";
+import { createFlags, flagQuery, withFlags, type Flag } from "./flags";
 import logger from "./logger";
 import type { Page, Paginated, Pagination } from "./paginated";
 import { repeat } from "./util";
@@ -73,7 +73,15 @@ export async function getLinkByDiscordId(discordId: string) {
 }
 
 function encodeCursor(entry: LinkEntry) {
-  return entry.id.toString();
+  return btoa(`link-${entry.id.toString()}`);
+}
+
+function decodeCursor(cursor?: string) {
+  if (!cursor) return 0;
+  const decoded = atob(cursor).substring("link-".length);
+  const parsed = Number.parseInt(decoded);
+  if (isNaN(parsed)) return 0;
+  return parsed;
 }
 
 function createPage<T>(
@@ -101,16 +109,39 @@ function createPage<T>(
   }
 }
 
-export async function getLinks(
-  pagination: Pagination
-): Promise<Page<LinkEntry>> {
-  const afterId = Number.parseInt(pagination.after ?? "-1");
+export type LinkFilter = {
+  search?: string;
+  flag?: Flag;
+};
 
-  const { total } = await db.get(`SELECT COUNT(*) total FROM Link`);
+export async function getLinks(
+  pagination: Pagination,
+  filter: LinkFilter = {}
+): Promise<Page<LinkEntry>> {
+  const afterId = decodeCursor(pagination.after);
+
+  const terms: string[] = ["TRUE"];
+  const params: string[] = [];
+
+  if (filter.search) {
+    terms.push(`(uuid LIKE ?) OR (uuid LIKE ?)`);
+    const pattern = `%${filter.search}%`;
+    params.push(pattern);
+    params.push(pattern);
+  }
+  if (filter.flag) terms.push(flagQuery(filter.flag));
+
+  const query = terms.map((it) => `(${it})`).join(" AND ");
+  logger.debug(query);
+
+  const { total } = await db.get(
+    `SELECT COUNT(*) total FROM Link WHERE ${query}`
+  );
 
   const entries = await db.all<LinkEntry[]>(
-    `SELECT * FROM Link WHERE id >= ? ORDER BY id ASC LIMIT ?`,
+    `SELECT * FROM Link WHERE id >= ? AND ${query} ORDER BY id ASC LIMIT ?`,
     afterId,
+    ...params,
     pagination.size + 1
   );
 

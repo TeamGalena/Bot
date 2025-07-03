@@ -1,0 +1,21 @@
+---
+import { FLAGS, type Flag } from "@teamgalena/shared/flags";
+
+const { value, multiple, ...props } = Astro.props as {
+  value?: Flag[];
+  multiple?: boolean;
+};
+
+const size = multiple ? Math.min(10, FLAGS.length) : 1;
+---
+
+<select {...props} multiple={multiple} name="flags" size={size}>
+  {!multiple && <option value="">Select Flag</option>}
+  {
+    FLAGS.map((flag) => (
+      <option selected={value?.includes(flag)} value={flag}>
+        {flag}
+      </option>
+    ))
+  }
+</select>

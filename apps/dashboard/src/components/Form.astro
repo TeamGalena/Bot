@@ -6,7 +6,7 @@ const props = Astro.props;
 const csrfToken = await generateCSRF(Astro.locals.user);
 ---
 
-<form parse-types="true" hx-disabled-elt="button" {...props}>
+<form {...props} parse-types="true" hx-disabled-elt="button">
   <input hidden name={CSRF_KEY} value={csrfToken} />
   <slot />
 </form>

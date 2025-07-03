@@ -1,4 +1,5 @@
 ---
+import Indicator from "./Indicator.astro";
 import Popup from "./Popup.astro";
 ---
 
@@ -25,7 +26,11 @@ import Popup from "./Popup.astro";
       integrity="sha384-aiAPowx3gG+h620/TJLIfLPgBcn6DMWlhu45oOhWVwTOjds9E6X2pmGbT4Xc8XMJ"
       crossorigin="anonymous"></script>
   </head>
-  <body hx-ext="json-enc-custom,response-targets,dialogs">
+  <body
+    hx-ext="json-enc-custom,response-targets,dialogs"
+    hx-indicator="#loading-indicator"
+  >
+    <Indicator />
     <main>
       <slot />
     </main>
