@@ -1,0 +1,33 @@
+---
+const props = Astro.props;
+---
+
+<table {...props}>
+  <thead>
+    <slot name="header" />
+  </thead>
+  <tbody>
+    <slot />
+  </tbody>
+</table>
+
+<style scoped>
+  table {
+    border-collapse: collapse;
+    font-size: 1.2em;
+
+    th {
+      padding: 0.5em;
+    }
+
+    tbody {
+      tr:nth-child(odd) {
+        background: #fff2;
+      }
+
+      td {
+        padding: 0.25em 0.5em;
+      }
+    }
+  }
+</style>

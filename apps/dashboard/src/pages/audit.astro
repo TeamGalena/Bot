@@ -1,0 +1,31 @@
+---
+import DateCell from "@/components/DateCell.astro";
+import Layout from "@/components/Layout.astro";
+import Table from "@/components/Table.astro";
+import { getAuditLog } from "@teamgalena/shared/database";
+
+const log = await getAuditLog();
+---
+
+<Layout>
+  <Table>
+    <tr slot="header">
+      <th>User</th>
+      <th>Action</th>
+      <th>Subject</th>
+      <th>Date</th>
+    </tr>
+    {
+      log.map((entry) => (
+        <tr>
+          <td>{entry.user}</td>
+          <td>{entry.action}</td>
+          <td>{entry.subject}</td>
+          <td>
+            <DateCell value={entry.date} />
+          </td>
+        </tr>
+      ))
+    }
+  </Table>
+</Layout>

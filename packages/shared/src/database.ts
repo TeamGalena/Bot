@@ -259,15 +259,25 @@ export async function truncateLinks() {
   await db.run(`DELETE FROM Link WHERE 1`);
 }
 
-type AuditEntry = {
+type InputAuditEntry = {
   user: User;
   action: string;
   subject: string;
 };
 
-async function addAudit({ action, user, subject }: AuditEntry) {
+type AuditEntry = InputAuditEntry & {
+  date: string;
+};
+
+async function addAudit({ action, user, subject }: InputAuditEntry) {
   await db.run(
     `INSERT INTO AuditLog (user, action, subject) VALUES (?, ?, ?)`,
     [user.username, action, subject]
+  );
+}
+
+export async function getAuditLog() {
+  return await db.all<AuditEntry[]>(
+    "SELECT * FROM AuditLog ORDER BY date DESC LIMIT 100"
   );
 }

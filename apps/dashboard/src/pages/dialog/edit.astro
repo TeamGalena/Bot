@@ -38,14 +38,7 @@ const flags = extractFlags(link.flags);
     <input name="discordId" required readonly value={link.discordId} />
 
     <label for="uuid">UUID</label>
-    <input
-      id="uuid"
-      name="uuid"
-      required
-      minlength="32"
-      maxlength="32"
-      value={link.uuid}
-    />
+    <input id="uuid" name="uuid" required value={link.uuid} />
 
     <label for="flags">Flags</label>
     <FlagsInput multiple value={flags} />

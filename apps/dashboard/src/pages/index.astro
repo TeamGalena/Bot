@@ -2,9 +2,10 @@
 import Layout from "@/components/Layout.astro";
 import Page from "@/components/Page.astro";
 import Search from "@/components/Search.astro";
+import Table from "@/components/Table.astro";
 import { getLinks } from "@teamgalena/shared/database";
 
-const size = 2;
+const size = 16;
 const page = await getLinks({ size });
 ---
 
@@ -12,63 +13,24 @@ const page = await getLinks({ size });
   <p class="info">
     {page.pageInfo.total} supporters have linked their minecraft account
   </p>
-  <Search hx-target="#link-list" pageInfo={page.pageInfo} />
-  <table>
-    <thead>
-      <tr>
-        <th>UUID</th>
-        <th>Discord-ID</th>
-        <th>Created</th>
-        <th>Updated</th>
-        <th>Rank</th>
-        <th>Flags</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="link-list">
-      <Page page={page} />
-    </tbody>
-  </table>
+  <Search hx-target="#link-list > tbody" pageInfo={page.pageInfo} />
+  <Table id="link-list">
+    <tr slot="header">
+      <th>UUID</th>
+      <th>Discord-ID</th>
+      <th>Created</th>
+      <th>Updated</th>
+      <th>Rank</th>
+      <th>Flags</th>
+      <th></th>
+    </tr>
+
+    <Page page={page} />
+  </Table>
 </Layout>
 
 <style>
   .info {
     text-align: center;
-  }
-
-  table {
-    border-collapse: collapse;
-    font-size: 1.2em;
-  }
-
-  th {
-    padding: 0.5em;
-  }
-
-  tbody {
-    tr:nth-child(odd) {
-      background: #fff2;
-    }
-
-    td {
-      padding: 0.25em 0.5em;
-    }
-
-    .actions {
-      button {
-        background: none;
-        border: none;
-        outline: none;
-
-        font-size: 1.25em;
-
-        transition: background 0.2s ease;
-        border-radius: 0.25em;
-
-        &:hover {
-          background: #fff3;
-        }
-      }
-    }
   }
 </style>
