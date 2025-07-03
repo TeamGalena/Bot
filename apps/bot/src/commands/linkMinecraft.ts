@@ -5,7 +5,8 @@ import {
   updateRank,
 } from "@teamgalena/shared/database";
 import { UserError } from "@teamgalena/shared/error";
-import { SUPPORTER_FLAGS } from "@teamgalena/shared/flags";
+import { createFlags, SUPPORTER_FLAGS } from "@teamgalena/shared/flags";
+import type { User } from "@teamgalena/shared/models";
 import { queryUsername, queryUUID } from "@teamgalena/shared/mojang";
 import {
   ChatInputCommandInteraction,
@@ -80,7 +81,10 @@ async function getRoles(interaction: ChatInputCommandInteraction) {
   }
 }
 
-export async function execute(interaction: ChatInputCommandInteraction) {
+export async function execute(
+  interaction: ChatInputCommandInteraction,
+  user: User
+) {
   await interaction.deferReply({ ephemeral: true });
 
   const roles = await getRoles(interaction);
@@ -88,8 +92,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const rank = supporterRoles.find((it) => roles?.includes(it.id))?.rank ?? -1;
 
   if (interaction.options.getSubcommand(true) === "refresh") {
-    await updateRank(interaction.user.id, rank);
-    if (rank > 0) await addFlags(interaction.user.id, ...SUPPORTER_FLAGS);
+    await updateRank(interaction.user.id, rank, user);
+    if (rank > 0) await addFlags(interaction.user.id, SUPPORTER_FLAGS, user);
 
     if (interaction.isRepliable()) {
       await interaction.editReply("Your supporter status was refreshed!");
@@ -99,8 +103,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       it.replaceAll("-", "")
     );
 
-    await persistLink({ discordId: interaction.user.id, uuid, rank });
-    if (rank > 0) await addFlags(interaction.user.id, ...SUPPORTER_FLAGS);
+    const flags = rank > 0 ? createFlags(...SUPPORTER_FLAGS) : undefined;
+    await persistLink(
+      { discordId: interaction.user.id, uuid, rank, flags },
+      user
+    );
 
     if (interaction.isRepliable()) {
       await interaction.editReply(

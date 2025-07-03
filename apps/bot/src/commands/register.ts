@@ -1,5 +1,6 @@
 import { UserError } from "@teamgalena/shared/error";
 import logger from "@teamgalena/shared/logger";
+import type { User } from "@teamgalena/shared/models";
 import {
   ChatInputCommandInteraction,
   Client,
@@ -15,7 +16,8 @@ import * as claimFlag from "./claimFlag";
 import * as linkMinecraft from "./linkMinecraft";
 
 type CommandHandler = (
-  interaction: ChatInputCommandInteraction
+  interaction: ChatInputCommandInteraction,
+  user: User
 ) => void | Promise<void>;
 
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
@@ -47,7 +49,7 @@ export async function executeCommand(interaction: Interaction) {
   }
 
   try {
-    await handler(interaction);
+    await handler(interaction, interaction.user);
   } catch (error) {
     if (error instanceof Error) logger.error(error.message);
 

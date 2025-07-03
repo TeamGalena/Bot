@@ -15,14 +15,14 @@ export async function PUT(context: APIContext): Promise<Response> {
     return new Response("no link found for given input", { status: 404 });
   }
 
-  await updateLink(existing, body);
+  await updateLink(existing, body, context.locals.user);
 
   return context.redirect(`/partial/row/${body.discordId}`);
 }
 
 export async function DELETE(context: APIContext): Promise<Response> {
   const body = await getFormData<InputLinkEntry>(context);
-  await deleteLinkByDiscordId(body.discordId);
+  await deleteLinkByDiscordId(body.discordId, context.locals.user);
 
   return new Response(null);
 }

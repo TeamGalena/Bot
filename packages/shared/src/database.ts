@@ -6,6 +6,7 @@ import { UserError } from "./error";
 import { createFlags, flagQuery, withFlags, type Flag } from "./flags";
 import logger from "./logger";
 import type { Page, Paginated, Pagination } from "./paginated";
+import type { User } from "./user";
 import { repeat } from "./util";
 
 const migrationsPath = optionalEnv("MIGRATIONS_PATH") ?? "/migrations";
@@ -160,7 +161,7 @@ export async function getLinkByUuid(uuid: string) {
 }
 
 export const updateLink = wrapError(
-  async (existing: LinkEntry, values: InputLinkEntry) => {
+  async (existing: LinkEntry, values: InputLinkEntry, user: User) => {
     const next = { ...existing, ...values };
     next.flags = resolveFlags(next.flags);
     if (
@@ -177,6 +178,12 @@ export const updateLink = wrapError(
       [next.uuid, next.rank, next.flags, next.discordId]
     );
 
+    await addAudit({
+      user,
+      action: "update_link",
+      subject: existing.discordId,
+    });
+
     const prettyFlags = next.flags.toString(2).padStart(8, "0");
     logger.debug(
       `updated ${next.discordId} <-> ${next.uuid} (${next.rank}/${prettyFlags})`
@@ -188,20 +195,24 @@ function resolveFlags(flags: InputLinkEntry["flags"]): number {
   return typeof flags === "number" ? flags : createFlags(...(flags ?? []));
 }
 
-const insertLink = wrapError(async (link: InputLinkEntry) => {
-  await db.run(
-    "INSERT INTO Link (discordId, uuid, rank, flags) VALUES (?, ?, ?, ?)",
-    [link.discordId, link.uuid, link.rank, resolveFlags(link.flags)]
-  );
-});
+export const insertLink = wrapError(
+  async (link: InputLinkEntry, user: User) => {
+    await db.run(
+      "INSERT INTO Link (discordId, uuid, rank, flags) VALUES (?, ?, ?, ?)",
+      [link.discordId, link.uuid, link.rank, resolveFlags(link.flags)]
+    );
 
-export async function persistLink(link: InputLinkEntry) {
+    await addAudit({ user, action: "create_link", subject: link.discordId });
+  }
+);
+
+export async function persistLink(link: InputLinkEntry, user: User) {
   const existing = await getLinkByDiscordId(link.discordId);
 
   if (existing) {
-    await updateLink(existing, link);
+    await updateLink(existing, link, user);
   } else {
-    await insertLink(link);
+    await insertLink(link, user);
 
     logger.debug(`linked ${link.discordId} <-> ${link.uuid} (${link.rank})`);
   }
@@ -213,14 +224,14 @@ async function requireLink(discordId: string) {
   throw new UserError("you have not linked your minecraft account yet");
 }
 
-export async function addFlags(discordId: string, ...flags: Flag[]) {
+export async function addFlags(discordId: string, flags: Flag[], user: User) {
   const link = await requireLink(discordId);
-  await updateLink(link, withFlags(link, ...flags));
+  await updateLink(link, withFlags(link, ...flags), user);
 }
 
-export async function updateRank(discordId: string, rank: number) {
+export async function updateRank(discordId: string, rank: number, user: User) {
   const link = await requireLink(discordId);
-  await updateLink(link, { ...link, rank });
+  await updateLink(link, { ...link, rank }, user);
 }
 
 export async function loadSupporterRoles() {
@@ -239,10 +250,24 @@ export async function containsAdminRole(roles: string[]) {
   return count > 0;
 }
 
-export async function deleteLinkByDiscordId(discordId: string) {
+export async function deleteLinkByDiscordId(discordId: string, user: User) {
   await db.run(`DELETE FROM Link WHERE discordId = ?`, [discordId]);
+  await addAudit({ user, action: "delete_link", subject: discordId });
 }
 
 export async function truncateLinks() {
   await db.run(`DELETE FROM Link WHERE 1`);
+}
+
+type AuditEntry = {
+  user: User;
+  action: string;
+  subject: string;
+};
+
+async function addAudit({ action, user, subject }: AuditEntry) {
+  await db.run(
+    `INSERT INTO AuditLog (user, action, subject) VALUES (?, ?, ?)`,
+    [user.username, action, subject]
+  );
 }
