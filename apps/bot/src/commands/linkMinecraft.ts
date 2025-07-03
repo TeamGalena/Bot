@@ -6,7 +6,7 @@ import {
 } from "@teamgalena/shared/database";
 import { UserError } from "@teamgalena/shared/error";
 import { SUPPORTER_FLAGS } from "@teamgalena/shared/flags";
-import { queryUUID } from "@teamgalena/shared/mojang";
+import { queryUsername, queryUUID } from "@teamgalena/shared/mojang";
 import {
   ChatInputCommandInteraction,
   GuildMemberRoleManager,
@@ -49,9 +49,12 @@ export const command = new SlashCommandBuilder()
     command.setName("refresh").setDescription("refresh your supporter status")
   );
 
-function validateUUID(input: string) {
+async function validateUUID(input: string) {
   if (input.length !== 32)
     throw new UserError("Invalid UUID, did you enter your username instead?");
+
+  await queryUsername(input);
+
   return input;
 }
 

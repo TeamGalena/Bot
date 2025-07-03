@@ -2,6 +2,6 @@
 
 declare namespace App {
   interface Locals {
-    user?: import("./lib/server/user").User;
+    user: import("./lib/server/user").User;
   }
 }

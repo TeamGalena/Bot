@@ -1,0 +1,62 @@
+---
+import Form from "@/components/Form.astro";
+import { getFormData } from "@/lib/server/csrf";
+import getPlayerName from "@/lib/server/mojang";
+import { getLinkByDiscordId } from "@teamgalena/shared/database";
+import { extractFlags, FLAGS } from "@teamgalena/shared/flags";
+
+export const partial = true;
+
+const { discordId } = await getFormData<{ discordId?: string }>(Astro);
+
+if (!discordId) {
+  return new Response(null, {
+    status: 400,
+    statusText: "parameter 'discordId' is missing",
+  });
+}
+
+const link = await getLinkByDiscordId(discordId);
+
+if (!link)
+  return new Response(null, {
+    status: 404,
+    statusText: `Link with uuid ${discordId} not found`,
+  });
+
+const username = await getPlayerName(link.uuid);
+const flags = extractFlags(link.flags);
+---
+
+<dialog open closedby="any">
+  <h3>Edit {username}</h3>
+  <Form hx-put="/api/link" hx-target={`#link-${discordId}`}>
+    <p id="error"></p>
+
+    <label for="discordId">Discord-ID</label>
+    <input name="discordId" required readonly value={link.discordId} />
+
+    <label for="uuid">UUID</label>
+    <input
+      id="uuid"
+      name="uuid"
+      required
+      minlength="32"
+      maxlength="32"
+      value={link.uuid}
+    />
+
+    <label for="flags">Flags</label>
+    <select name="flags" multiple size={Math.min(10, FLAGS.length)}>
+      {
+        FLAGS.map((flag) => (
+          <option selected={flags.includes(flag)} value={flag}>
+            {flag}
+          </option>
+        ))
+      }
+    </select>
+
+    <button type="submit">Submit</button>
+  </Form>
+</dialog>

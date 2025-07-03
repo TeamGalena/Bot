@@ -5,13 +5,11 @@ import {
   persistLink,
   truncateLinks,
 } from "@teamgalena/shared/database";
-import { createFlags, type Flag } from "@teamgalena/shared/flags";
+import { createFlags, FLAGS } from "@teamgalena/shared/flags";
 import logger from "@teamgalena/shared/logger";
 import parseArgs from "arg";
 
 dotenv.config({ convention: "flow" });
-
-const FLAGS: Flag[] = ["anniversary", "pride"];
 
 await migrateDatabase();
 
@@ -30,12 +28,22 @@ if (args["--truncate"]) {
 const count = args["--count"] ?? 100;
 logger.info(`creating ${count} random link entries...`);
 
+const uuids = faker.helpers.uniqueArray(faker.string.uuid, count);
+const discordIds = faker.helpers.uniqueArray(
+  faker.database.mongodbObjectId,
+  count
+);
+
 for (let i = 0; i < count; i++) {
+  const flags = faker.datatype.boolean(0.3)
+    ? createFlags(...faker.helpers.arrayElements(FLAGS))
+    : undefined;
+
   await persistLink({
-    discordId: faker.database.mongodbObjectId(),
-    uuid: faker.string.uuid(),
+    discordId: discordIds[i],
+    uuid: uuids[i],
     rank: faker.number.int({ min: 0, max: 100 }),
-    flags: createFlags(...faker.helpers.arrayElements(FLAGS)),
+    flags,
   });
 }
 

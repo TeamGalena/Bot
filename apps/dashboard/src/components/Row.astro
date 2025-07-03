@@ -1,0 +1,23 @@
+---
+import DateCell from "@/components/DateCell.astro";
+import Form from "@/components/Form.astro";
+import type { LinkEntry } from "@teamgalena/shared/database";
+
+const { value } = Astro.props as { value: LinkEntry };
+---
+
+<td>{value.uuid}</td>
+<td>{value.discordId}</td>
+<td>
+  <DateCell value={value.createdAt} />
+</td>
+<td>
+  <DateCell value={value.updatedAt} />
+</td>
+<td>
+  <Form>
+    <input type="hidden" name="discordId" value={value.discordId} />
+    <button hx-post="/dialog/edit" hx-target="#popup">✏️</button>
+    <button hx-post="/dialog/delete" hx-target="#popup">🗑️</button>
+  </Form>
+</td>

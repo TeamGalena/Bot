@@ -1,0 +1,39 @@
+---
+
+---
+
+<section id="popup" hx-target-error="#error">
+  <slot />
+</section>
+
+<style scoped>
+  #popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    dialog {
+      background: #1e2129;
+      color: #ddd;
+      border: 2px solid #313542;
+      border-radius: 0.5em;
+      outline: none;
+      min-width: 500px;
+      padding: 2em;
+
+      position: absolute;
+      top: 50lvh;
+      left: 50lvw;
+      transform: translate(-50%, -50%);
+
+      h3 {
+        text-align: center;
+      }
+
+      form {
+        display: grid;
+        gap: 1em;
+      }
+    }
+  }
+</style>

@@ -1,7 +1,7 @@
 ---
+import Row from "@/components/Row.astro";
 import type { LinkEntry } from "@teamgalena/shared/database";
 import type { Page } from "@teamgalena/shared/models";
-import DateCell from "./DateCell.astro";
 
 const { page } = Astro.props as { page: Page<LinkEntry> };
 ---
@@ -23,26 +23,8 @@ const { page } = Astro.props as { page: Page<LinkEntry> };
     <tbody>
       {
         page.items.map(({ value }) => (
-          <tr>
-            <td>{value.uuid}</td>
-            <td>{value.discordId}</td>
-            <td>
-              <DateCell value={value.createdAt} />
-            </td>
-            <td>
-              <DateCell value={value.updatedAt} />
-            </td>
-            <td>
-              <form>
-                <input type="hidden" name="uuid" value={value.uuid} />
-                <button hx-post="/edit" hx-target="#popup">
-                  ✏️
-                </button>
-                <button hx-post="/delete" hx-target="#popup">
-                  🗑️
-                </button>
-              </form>
-            </td>
+          <tr id={`link-${value.discordId}`}>
+            <Row value={value} />
           </tr>
         ))
       }

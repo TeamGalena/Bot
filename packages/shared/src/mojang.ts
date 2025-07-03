@@ -57,6 +57,6 @@ export async function queryUsername(uuid: string) {
     logger.error(
       `received '${(e as Error).message}' from mojang for uuid '${uuid}'`
     );
-    throw new UserError("unable to query player name");
+    throw new UserError("unknown uuid");
   }
 }

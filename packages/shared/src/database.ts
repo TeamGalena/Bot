@@ -47,12 +47,26 @@ function resolveError(ex: unknown) {
   if (!(ex instanceof Error)) return ex;
   if (!("code" in ex)) return ex;
   if (ex.code === "SQLITE_CONSTRAINT")
-    throw new UserError(
+    return new UserError(
       "this minecraft uuid is already linked to another account"
     );
+
+  return ex;
 }
 
-async function getLinkByDiscordId(discordId: string) {
+function wrapError<TArgs extends unknown[], TReturn>(
+  func: (...args: TArgs) => Promise<TReturn>
+) {
+  return async (...args: TArgs): Promise<TReturn> => {
+    try {
+      return await func(...args);
+    } catch (ex) {
+      throw resolveError(ex);
+    }
+  };
+}
+
+export async function getLinkByDiscordId(discordId: string) {
   return await db.get<LinkEntry>("SELECT * FROM Link WHERE discordId = ?", [
     discordId,
   ]);
@@ -114,27 +128,36 @@ export async function getLinkByUuid(uuid: string) {
   ]);
 }
 
-async function updateLink(existing: LinkEntry, values: InputLinkEntry) {
-  const next = { ...existing, ...values };
-  if (
-    next.rank === existing.rank &&
-    next.uuid === existing.uuid &&
-    next.flags === existing.flags
-  ) {
-    logger.debug("skipped linking, all values are the same");
-    return;
+export const updateLink = wrapError(
+  async (existing: LinkEntry, values: InputLinkEntry) => {
+    const next = { ...existing, ...values };
+    if (
+      next.rank === existing.rank &&
+      next.uuid === existing.uuid &&
+      next.flags === existing.flags
+    ) {
+      logger.debug("skipped linking, all values are the same");
+      return;
+    }
+
+    await db.run(
+      "UPDATE Link SET uuid = ?, rank = ?, flags = ?, updatedAt = date('now') WHERE discordId = ?",
+      [next.uuid, next.rank, next.flags, next.discordId]
+    );
+
+    const prettyFlags = next.flags.toString(2).padStart(8, "0");
+    logger.debug(
+      `updated ${next.discordId} <-> ${next.uuid} (${next.rank}/${prettyFlags})`
+    );
   }
+);
 
+const insertLink = wrapError(async (link: InputLinkEntry) => {
   await db.run(
-    "UPDATE Link SET uuid = ?, rank = ?, flags = ? WHERE discordId = ?",
-    [next.uuid, next.rank, next.flags, next.discordId]
+    "INSERT INTO Link (discordId, uuid, rank, flags) VALUES (?, ?, ?, ?)",
+    [link.discordId, link.uuid, link.rank, link.flags ?? 0]
   );
-
-  const prettyFlags = next.flags.toString(2).padStart(8, "0");
-  logger.debug(
-    `updated ${next.discordId} <-> ${next.uuid} (${next.rank}/${prettyFlags})`
-  );
-}
+});
 
 export async function persistLink(link: InputLinkEntry) {
   const existing = await getLinkByDiscordId(link.discordId);
@@ -142,14 +165,7 @@ export async function persistLink(link: InputLinkEntry) {
   if (existing) {
     await updateLink(existing, link);
   } else {
-    try {
-      await db.run(
-        "INSERT INTO Link (discordId, uuid, rank) VALUES (?, ?, ?)",
-        [link.discordId, link.uuid, link.rank]
-      );
-    } catch (ex) {
-      throw resolveError(ex);
-    }
+    await insertLink(link);
 
     logger.debug(`linked ${link.discordId} <-> ${link.uuid} (${link.rank})`);
   }
@@ -185,6 +201,10 @@ export async function containsAdminRole(roles: string[]) {
   );
 
   return count > 0;
+}
+
+export async function deleteLinkByDiscordId(discordId: string) {
+  await db.run(`DELETE FROM Link WHERE discordId = ?`, [discordId]);
 }
 
 export async function truncateLinks() {

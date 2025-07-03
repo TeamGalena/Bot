@@ -12,6 +12,8 @@ export type Flag = keyof typeof Flags;
 
 export const SUPPORTER_FLAGS: Flag[] = ["pride"];
 
+export const FLAGS = Object.keys(Flags) as Flag[];
+
 export function createFlags(...values: Flag[]) {
   if (values.length === 0) return 0;
   const masks = values.map((it) => 1 << Flags[it]);

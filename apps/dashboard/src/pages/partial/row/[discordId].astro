@@ -1,0 +1,25 @@
+---
+import Row from "@/components/Row.astro";
+import { getLinkByDiscordId } from "@teamgalena/shared/database";
+
+export const partial = true;
+
+const { discordId } = Astro.params;
+
+if (!discordId) {
+  return new Response(null, {
+    status: 400,
+    statusText: "parameter 'discordId' is missing",
+  });
+}
+
+const link = await getLinkByDiscordId(discordId);
+
+if (!link)
+  return new Response(null, {
+    status: 404,
+    statusText: `Link with uuid ${discordId} not found`,
+  });
+---
+
+<Row value={link} />

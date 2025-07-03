@@ -1,0 +1,12 @@
+---
+import { CSRF_KEY, generateCSRF } from "@/lib/server/csrf";
+
+const props = Astro.props;
+
+const csrfToken = await generateCSRF(Astro.locals.user);
+---
+
+<form {...props}>
+  <input type="hidden" name={CSRF_KEY} value={csrfToken} />
+  <slot />
+</form>

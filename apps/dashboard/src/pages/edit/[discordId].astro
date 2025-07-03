@@ -1,0 +1,10 @@
+---
+import Layout from "@/components/Layout.astro";
+import EditDialog from "@/pages/dialog/edit.astro";
+
+const { discordId } = Astro.params;
+---
+
+<Layout>
+  <EditDialog slot="dialog" discordId={discordId} />
+</Layout>
