@@ -1,4 +1,3 @@
-import { join } from "path";
 import { open } from "sqlite";
 import sqlite3 from "sqlite3";
 import { optionalEnv } from "./config";
@@ -10,7 +9,7 @@ import type { User } from "./user";
 import { repeat } from "./util";
 
 const migrationsPath = optionalEnv("MIGRATIONS_PATH") ?? "/migrations";
-const dataPath = optionalEnv("DATA_PATH") ?? "/data";
+const dataPath = optionalEnv("DATA_PATH") ?? "/data/database.db";
 
 export async function migrateDatabase() {
   logger.debug(`searching for migrations in ${migrationsPath}`);
@@ -21,7 +20,7 @@ export async function migrateDatabase() {
 logger.debug(`Loading database in ${dataPath}`);
 
 const db = await open({
-  filename: join(dataPath, "database.db"),
+  filename: dataPath,
   driver: sqlite3.Database,
 });
 
@@ -43,6 +42,10 @@ export type RoleEntry = {
   id: string;
   rank: number;
 };
+
+function now() {
+  return new Date().toISOString();
+}
 
 function resolveError(ex: unknown) {
   if (!(ex instanceof Error)) return ex;
@@ -174,8 +177,8 @@ export const updateLink = wrapError(
     }
 
     await db.run(
-      "UPDATE Link SET uuid = ?, rank = ?, flags = ?, updatedAt = datetime('now') WHERE discordId = ?",
-      [next.uuid, next.rank, next.flags, next.discordId]
+      "UPDATE Link SET uuid = ?, rank = ?, flags = ?, updatedAt = ? WHERE discordId = ?",
+      [next.uuid, next.rank, next.flags, now(), next.discordId]
     );
 
     await addAudit({
@@ -255,24 +258,25 @@ export async function deleteLinkByDiscordId(discordId: string, user: User) {
   await addAudit({ user, action: "delete_link", subject: discordId });
 }
 
-export async function truncateLinks() {
+export async function truncateDatabase() {
   await db.run(`DELETE FROM Link WHERE 1`);
+  await db.run(`DELETE FROM AuditLog WHERE 1`);
 }
 
-type InputAuditEntry = {
+export type InputAuditEntry = {
   user: User;
   action: string;
   subject: string;
 };
 
-type AuditEntry = InputAuditEntry & {
+export type AuditEntry = InputAuditEntry & {
   date: string;
 };
 
 async function addAudit({ action, user, subject }: InputAuditEntry) {
   await db.run(
-    `INSERT INTO AuditLog (user, action, subject) VALUES (?, ?, ?)`,
-    [user.username, action, subject]
+    `INSERT INTO AuditLog (user, action, subject, date) VALUES (?, ?, ?, ?)`,
+    [user.username, action, subject, now()]
   );
 }
 

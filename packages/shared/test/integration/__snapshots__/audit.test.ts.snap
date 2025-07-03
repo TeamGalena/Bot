@@ -1,0 +1,31 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`creates audit log when creating an entry: insert-audit-log 1`] = `
+{
+  "action": "create_link",
+  "date": "2025-02-12T14:33:47.000Z",
+  "id": 1,
+  "subject": "test-discord-id",
+  "user": "test-user",
+}
+`;
+
+exports[`creates audit log when updating an entry: update-audit-log 1`] = `
+{
+  "action": "update_link",
+  "date": "2025-02-16T14:33:47.000Z",
+  "id": 2,
+  "subject": "test-discord-id",
+  "user": "test-user",
+}
+`;
+
+exports[`creates audit log when deleting an entry: delete-audit-log 1`] = `
+{
+  "action": "delete_link",
+  "date": "2025-02-16T14:33:47.000Z",
+  "id": 2,
+  "subject": "test-discord-id",
+  "user": "test-user",
+}
+`;

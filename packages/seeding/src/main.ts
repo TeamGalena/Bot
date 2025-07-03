@@ -3,7 +3,7 @@ import { faker } from "@faker-js/faker";
 import {
   insertLink,
   migrateDatabase,
-  truncateLinks,
+  truncateDatabase,
 } from "@teamgalena/shared/database";
 import { createFlags, FLAGS } from "@teamgalena/shared/flags";
 import logger from "@teamgalena/shared/logger";
@@ -23,7 +23,7 @@ const args = parseArgs({
 
 if (args["--truncate"]) {
   logger.info("deleting existing links");
-  await truncateLinks();
+  await truncateDatabase();
 }
 
 const count = args["--count"] ?? 100;

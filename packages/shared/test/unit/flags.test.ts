@@ -1,6 +1,6 @@
 import type { LinkEntry } from "@teamgalena/shared/database";
 import { expect, test } from "bun:test";
-import { flagQuery, withFlags } from "../src/flags";
+import { flagQuery, withFlags } from "../../src/flags";
 
 function createLinkEntry(values: Partial<LinkEntry> = {}): LinkEntry {
   return {
