@@ -3,9 +3,9 @@ import type { LinkEntry } from "./database/link";
 const Flags = {
   pride: 0,
   anniversary: 1,
-  gilded: 3,
-  mehvahdjukaar: 2,
-  tuccut: 3,
+  gilded: 2,
+  mehvahdjukaar: 3,
+  tuccut: 4,
 };
 
 export type Flag = keyof typeof Flags;

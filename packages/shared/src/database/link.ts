@@ -22,7 +22,7 @@ export type InputLinkEntry = {
   discordId: string;
   uuid: string;
   rank: number;
-  flags?: number | Flag[];
+  flags?: number | Flag[] | Flag;
 };
 
 export type LinkEntry = InputLinkEntry & {
@@ -73,7 +73,6 @@ export async function getLinks(
   if (filter.flag) terms.push(flagQuery(filter.flag));
 
   const query = terms.map((it) => `(${it})`).join(" AND ");
-  logger.debug(query);
 
   const { total } = await db.get(
     `SELECT COUNT(*) total FROM Link WHERE ${query}`
@@ -132,7 +131,10 @@ export const updateLink = wrapError(
 );
 
 function resolveFlags(flags: InputLinkEntry["flags"]): number {
-  return typeof flags === "number" ? flags : createFlags(...(flags ?? []));
+  if (typeof flags === "number") return flags;
+  if (Array.isArray(flags)) return createFlags(...flags);
+  if (!flags) return createFlags();
+  return createFlags(flags);
 }
 
 export const insertLink = wrapError(
