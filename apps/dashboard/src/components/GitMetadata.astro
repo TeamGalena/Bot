@@ -1,0 +1,10 @@
+---
+import type { GitMetadata } from "@/lib/server/metadata";
+
+const { hash, repo } = Astro.props as GitMetadata;
+const url = `https://github.com/${repo}/tree/${hash}/apps/dashboard`;
+---
+
+<span>
+  {repo}@<a target="_blank" href={url}>{hash}</a>
+</span>

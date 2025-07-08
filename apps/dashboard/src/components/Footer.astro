@@ -1,0 +1,22 @@
+---
+import GitMetadata from "@/components/GitMetadata.astro";
+import { gitInfo } from "@/lib/server/metadata";
+---
+
+<footer>
+  {gitInfo && <GitMetadata {...gitInfo} />}
+</footer>
+
+<style scoped>
+  footer {
+    background: #0003;
+    font-size: 0.8em;
+    padding: 2em;
+
+    text-align: center;
+
+    a {
+      color: var(--accent);
+    }
+  }
+</style>

@@ -29,6 +29,12 @@ COPY --from=install /pruned/node_modules node_modules
 COPY --from=install /pruned/apps/dashboard/dist dist
 COPY --from=install /pruned/apps/dashboard/public public
 
+ARG $gitHash
+ENV GIT_HASH=$gitHash
+
+ARG $gitRepo
+ENV GIT_REPO=$gitRepo
+
 # run the app
 ENV HOST=0.0.0.0
 ENV PORT=80
