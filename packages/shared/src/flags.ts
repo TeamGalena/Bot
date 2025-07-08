@@ -1,4 +1,4 @@
-import type { LinkEntry } from "./database";
+import type { LinkEntry } from "./database/link";
 
 const Flags = {
   pride: 0,

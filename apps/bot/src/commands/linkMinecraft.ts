@@ -72,8 +72,6 @@ async function getUUID(interaction: ChatInputCommandInteraction) {
   }
 }
 
-const supporterRoles = await loadSupporterRoles();
-
 async function getRoles(interaction: ChatInputCommandInteraction) {
   const roles = interaction.member?.roles;
   if (roles instanceof GuildMemberRoleManager) {
@@ -87,6 +85,7 @@ export async function execute(
 ) {
   await interaction.deferReply({ ephemeral: true });
 
+  const supporterRoles = await loadSupporterRoles();
   const roles = await getRoles(interaction);
 
   const rank = supporterRoles.find((it) => roles?.includes(it.id))?.rank ?? -1;

@@ -6,7 +6,7 @@
     "./config": "./src/config.ts",
     "./flags": "./src/flags.ts",
     "./models": "./src/models.ts",
-    "./database": "./src/database.ts",
+    "./database": "./src/database/index.ts",
     "./error": "./src/error.ts",
     "./logger": "./src/logger.ts",
     "./mojang": "./src/mojang.ts"

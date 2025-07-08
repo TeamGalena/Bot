@@ -13,7 +13,7 @@ const logger: Logger = {
   debug: (it) => console.log(chalk.blue(it)),
   info: (it) => console.log(it),
   warn: (it) => console.warn(chalk.yellow(it)),
-  error: (it, exception) => console.error(chalk.red(it), exception),
+  error: (it, ...exception) => console.error(chalk.red(it), ...exception),
 };
 
 export default logger;

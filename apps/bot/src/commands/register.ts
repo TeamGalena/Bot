@@ -14,6 +14,7 @@ import {
 import { config } from "../config";
 import * as claimFlag from "./claimFlag";
 import * as linkMinecraft from "./linkMinecraft";
+import * as modInfo from "./modInfo";
 
 type CommandHandler = (
   interaction: ChatInputCommandInteraction,
@@ -36,6 +37,7 @@ function addCommand({
 
 addCommand(linkMinecraft);
 addCommand(claimFlag);
+addCommand(modInfo);
 
 const rest = new REST().setToken(config.botToken);
 

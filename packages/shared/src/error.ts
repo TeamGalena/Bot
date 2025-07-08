@@ -13,3 +13,23 @@ export function wrapCatching<T extends unknown[]>(
     }
   };
 }
+
+function wrapError<TArgs extends unknown[], TReturn>(
+  func: (...args: TArgs) => Promise<TReturn>,
+  resolver: (ex: Error) => Error
+) {
+  return async (...args: TArgs): Promise<TReturn> => {
+    try {
+      return await func(...args);
+    } catch (ex) {
+      if (ex instanceof Error) throw resolver(ex);
+      else throw new Error(ex?.toString());
+    }
+  };
+}
+
+export function createErrorWrapper(resolver: (ex: Error) => Error) {
+  return <TArgs extends unknown[], TReturn>(
+    func: (...args: TArgs) => Promise<TReturn>
+  ) => wrapError(func, resolver);
+}

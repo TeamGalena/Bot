@@ -1,27 +1,21 @@
-import { open } from "sqlite";
-import sqlite3 from "sqlite3";
-import { optionalEnv } from "./config";
-import { UserError } from "./error";
-import { createFlags, flagQuery, withFlags, type Flag } from "./flags";
-import logger from "./logger";
-import type { Page, Paginated, Pagination } from "./paginated";
-import type { User } from "./user";
-import { repeat } from "./util";
+import { createErrorWrapper, UserError } from "../error";
+import { createFlags, flagQuery, withFlags, type Flag } from "../flags";
+import logger from "../logger";
+import type { Page, Pagination } from "../paginated";
+import type { User } from "../user";
+import { now } from "../util";
+import { addAudit } from "./audit";
+import { db } from "./connection";
+import { createPage } from "./paginated";
 
-const migrationsPath = optionalEnv("MIGRATIONS_PATH") ?? "/migrations";
-const dataPath = optionalEnv("DATA_PATH") ?? "/data/database.db";
+const wrapError = createErrorWrapper((ex) => {
+  if (!("code" in ex)) return ex;
+  if (ex.code === "SQLITE_CONSTRAINT")
+    return new UserError(
+      "this minecraft uuid is already linked to another account"
+    );
 
-export async function migrateDatabase() {
-  logger.debug(`searching for migrations in ${migrationsPath}`);
-  await db.migrate({ migrationsPath });
-  logger.info("migrated database");
-}
-
-logger.debug(`Loading database in ${dataPath}`);
-
-const db = await open({
-  filename: dataPath,
-  driver: sqlite3.Database,
+  return ex;
 });
 
 export type InputLinkEntry = {
@@ -38,37 +32,10 @@ export type LinkEntry = InputLinkEntry & {
   flags: number;
 };
 
-export type RoleEntry = {
-  id: string;
-  rank: number;
+export type LinkFilter = {
+  search?: string;
+  flag?: Flag;
 };
-
-function now() {
-  return new Date().toISOString();
-}
-
-function resolveError(ex: unknown) {
-  if (!(ex instanceof Error)) return ex;
-  if (!("code" in ex)) return ex;
-  if (ex.code === "SQLITE_CONSTRAINT")
-    return new UserError(
-      "this minecraft uuid is already linked to another account"
-    );
-
-  return ex;
-}
-
-function wrapError<TArgs extends unknown[], TReturn>(
-  func: (...args: TArgs) => Promise<TReturn>
-) {
-  return async (...args: TArgs): Promise<TReturn> => {
-    try {
-      return await func(...args);
-    } catch (ex) {
-      throw resolveError(ex);
-    }
-  };
-}
 
 export async function getLinkByDiscordId(discordId: string) {
   return await db.get<LinkEntry>("SELECT * FROM Link WHERE discordId = ?", [
@@ -87,36 +54,6 @@ function decodeCursor(cursor?: string) {
   if (isNaN(parsed)) return 0;
   return parsed;
 }
-
-function createPage<T>(
-  items: Paginated<T>[],
-  size: number,
-  total: number
-): Page<T> {
-  if (items.length > size) {
-    return {
-      items: items.slice(1),
-      pageInfo: {
-        size,
-        total,
-        next: items[items.length - 1].cursor,
-      },
-    };
-  } else {
-    return {
-      items,
-      pageInfo: {
-        total,
-        size: items.length,
-      },
-    };
-  }
-}
-
-export type LinkFilter = {
-  search?: string;
-  flag?: Flag;
-};
 
 export async function getLinks(
   pagination: Pagination,
@@ -237,51 +174,7 @@ export async function updateRank(discordId: string, rank: number, user: User) {
   await updateLink(link, { ...link, rank }, user);
 }
 
-export async function loadSupporterRoles() {
-  return await db.all<RoleEntry[]>("SELECT * FROM Role ORDER BY rank DESC");
-}
-
-export async function containsAdminRole(roles: string[]) {
-  const { count } = await db.get(
-    `SELECT COUNT(*) count FROM Role WHERE isAdmin = TRUE AND id IN (${repeat(
-      "?",
-      roles.length
-    )})`,
-    ...roles
-  );
-
-  return count > 0;
-}
-
 export async function deleteLinkByDiscordId(discordId: string, user: User) {
   await db.run(`DELETE FROM Link WHERE discordId = ?`, [discordId]);
   await addAudit({ user, action: "delete_link", subject: discordId });
-}
-
-export async function truncateDatabase() {
-  await db.run(`DELETE FROM Link WHERE 1`);
-  await db.run(`DELETE FROM AuditLog WHERE 1`);
-}
-
-export type InputAuditEntry = {
-  user: User;
-  action: string;
-  subject: string;
-};
-
-export type AuditEntry = InputAuditEntry & {
-  date: string;
-};
-
-async function addAudit({ action, user, subject }: InputAuditEntry) {
-  await db.run(
-    `INSERT INTO AuditLog (user, action, subject, date) VALUES (?, ?, ?, ?)`,
-    [user.username, action, subject, now()]
-  );
-}
-
-export async function getAuditLog() {
-  return await db.all<AuditEntry[]>(
-    "SELECT * FROM AuditLog ORDER BY date DESC LIMIT 100"
-  );
 }
