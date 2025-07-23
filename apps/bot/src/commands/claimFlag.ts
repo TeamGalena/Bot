@@ -6,16 +6,16 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 type DatePredicate = (date: Date) => boolean;
 
-function inMonth(month: number): DatePredicate {
-  if (month < 1 || month > 12) throw new Error("months are between 1-12");
-  const utcMonth = month - 1;
-  return (date) => {
-    return date.getUTCMonth() === utcMonth;
-  };
+function inMonth(...months: number[]): DatePredicate {
+  const utcMonths = months.map((month) => {
+    if (month < 1 || month > 12) throw new Error("months are between 1-12");
+    return month - 1;
+  });
+  return (date) => utcMonths.some((it) => date.getUTCMonth() === it);
 }
 
 const timeRanges: Partial<Record<Flag, DatePredicate>> = {
-  pride: inMonth(6),
+  pride: inMonth(6, 7),
 };
 
 export const command = new SlashCommandBuilder()
