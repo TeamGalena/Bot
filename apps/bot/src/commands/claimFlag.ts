@@ -14,8 +14,13 @@ function inMonth(...months: number[]): DatePredicate {
   return (date) => utcMonths.some((it) => date.getUTCMonth() === it);
 }
 
+function before(deadline: Date): DatePredicate {
+  return (it) => it < deadline;
+}
+
 const timeRanges: Partial<Record<Flag, DatePredicate>> = {
   pride: inMonth(6, 7),
+  youtube: before(new Date("2025-08-17")),
 };
 
 export const command = new SlashCommandBuilder()

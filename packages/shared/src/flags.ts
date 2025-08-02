@@ -1,4 +1,5 @@
 import type { LinkEntry } from "./database/link";
+import { hasDuplicates } from "./util";
 
 const Flags = {
   pride: 0,
@@ -6,7 +7,12 @@ const Flags = {
   gilded: 2,
   mehvahdjukaar: 3,
   tuccut: 4,
+  youtube: 5,
 };
+
+if (hasDuplicates(Object.values(Flags))) {
+  throw new Error("flags not unique");
+}
 
 export type Flag = keyof typeof Flags;
 
