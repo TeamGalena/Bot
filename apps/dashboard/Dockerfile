@@ -1,9 +1,9 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
 FROM oven/bun:slim AS base
+WORKDIR /usr/src
 
 FROM base AS builder
-WORKDIR /app
 
 RUN bun install turbo@2 --global
 COPY . .
@@ -15,19 +15,19 @@ RUN turbo prune @teamgalena/dashboard --docker
 FROM base AS install
 WORKDIR /pruned
 
-COPY --from=builder /app/out/json/ .
+COPY --from=builder /usr/src/out/json/ .
 RUN bun install --frozen-lockfile --production
 
-COPY --from=builder /app/out/full .
+COPY --from=builder /usr/src/out/full .
 RUN bun run --filter @teamgalena/dashboard build
 
 # copy production dependencies and source code into final image
 FROM base AS release
-WORKDIR /app
 
 COPY --from=install /pruned/node_modules node_modules
 COPY --from=install /pruned/apps/dashboard/dist dist
 COPY --from=install /pruned/apps/dashboard/public public
+COPY --from=install /pruned/apps/dashboard/scripts scripts
 
 ARG $gitHash
 ENV GIT_HASH=$gitHash
@@ -39,5 +39,8 @@ ENV GIT_REPO=$gitRepo
 ENV HOST=0.0.0.0
 ENV PORT=80
 EXPOSE 80/tcp
+
+HEALTHCHECK --timeout=5s \
+   CMD wget --no-verbose --tries=1 --spider http://localhost/api/health || exit 1
 
 CMD ["bun", "run", "dist/server/entry.mjs"]

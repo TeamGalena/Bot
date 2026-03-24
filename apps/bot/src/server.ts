@@ -25,5 +25,13 @@ server.route({
   },
 });
 
+server.route({
+  method: "GET",
+  path: "/status",
+  handler: () => ({
+    running: true,
+  }),
+});
+
 await server.start();
 logger.debug(`server accepting responses at ${server.info.uri}`);

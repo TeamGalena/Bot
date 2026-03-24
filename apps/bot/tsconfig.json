@@ -1,6 +1,7 @@
 {
   "extends": "@teamgalena/configs/tsconfig",
   "include": [
-    "src"
+    "src",
+    "scripts"
   ]
 }

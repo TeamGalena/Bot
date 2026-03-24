@@ -1,9 +1,9 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
 FROM oven/bun:slim AS base
+WORKDIR /usr/src
 
 FROM base AS builder
-WORKDIR /app
 
 RUN bun install turbo@2 --global
 COPY . .
@@ -16,16 +16,18 @@ FROM base AS install
 
 WORKDIR /pruned
 
-COPY --from=builder /app/out/json/ .
+COPY --from=builder /usr/src/out/json/ .
 RUN bun install --frozen-lockfile --production
 
 # copy production dependencies and source code into final image
 FROM base AS release
-WORKDIR /app
 
 COPY --from=install /pruned/node_modules node_modules
-COPY --from=builder /app/out/full ./
+COPY --from=builder /usr/src/out/full ./
 COPY migrations /migrations
+
+HEALTHCHECK --timeout=5s \
+   CMD bun run /usr/src/apps/bot/scripts/healthcheck.ts
 
 # run the app
 EXPOSE 3000/tcp
