@@ -26,6 +26,7 @@ FROM base AS release
 
 COPY --from=install /pruned/node_modules node_modules
 COPY --from=install /pruned/apps/dashboard/dist dist
+COPY --from=install /pruned/apps/dashboard/scripts scripts
 COPY --from=install /pruned/apps/dashboard/public public
 
 ARG $gitHash
@@ -40,6 +41,6 @@ ENV PORT=80
 EXPOSE 80/tcp
 
 HEALTHCHECK --timeout=5s \
-   CMD bun run /usr/src/apps/bot/scripts/healthcheck.ts
+   CMD bun run /usr/src/scripts/healthcheck.ts
 
 CMD ["bun", "run", "dist/server/entry.mjs"]
