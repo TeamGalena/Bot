@@ -40,6 +40,6 @@ ENV PORT=80
 EXPOSE 80/tcp
 
 HEALTHCHECK --timeout=5s \
-   CMD wget --no-verbose --tries=1 --spider http://localhost/api/health || exit 1
+   CMD bun run /usr/src/apps/bot/scripts/healthcheck.ts
 
 CMD ["bun", "run", "dist/server/entry.mjs"]
