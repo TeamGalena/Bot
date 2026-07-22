@@ -14,7 +14,7 @@
     "@teamgalena/configs": "workspace:*",
     "arctic": "^3.7.0",
     "astro": "^5.10.1",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
