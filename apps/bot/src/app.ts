@@ -5,9 +5,16 @@ import { Client, Events, GatewayIntentBits } from "discord.js";
 import registerCommands, { executeCommand } from "./commands/register";
 import { config } from "./config";
 import { sendModInfo } from "./info";
+import { handleMessage } from "./messages";
 import "./server";
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
 
 client.once(Events.ClientReady, async (it) => {
   logger.info(`logged in as ${it.user.tag}`);
@@ -19,6 +26,8 @@ client.once(Events.ClientReady, async (it) => {
 });
 
 client.on(Events.InteractionCreate, wrapCatching(executeCommand));
+
+client.on(Events.MessageCreate, wrapCatching(handleMessage));
 
 await migrateDatabase();
 
