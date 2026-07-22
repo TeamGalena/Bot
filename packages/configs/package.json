@@ -4,16 +4,11 @@
   "type": "module",
   "exports": {
     "./tsconfig": "./tsconfig.json",
-    "./eslint": "./eslint.config.mjs"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.28.0",
-    "eslint": "^9.28.0",
-    "typescript-eslint": "^8.33.0"
+    "./eslint": "./eslint.config.js"
   },
   "dependencies": {
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7",
-    "chalk": "^5.6.2"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.7.0",
+    "typescript-eslint": "^8.64.0"
   }
 }

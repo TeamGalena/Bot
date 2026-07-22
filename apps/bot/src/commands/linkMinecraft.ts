@@ -8,8 +8,9 @@ import { UserError } from "@teamgalena/shared/error";
 import { createFlags, SUPPORTER_FLAGS } from "@teamgalena/shared/flags";
 import type { User } from "@teamgalena/shared/models";
 import { queryUsername, queryUUID } from "@teamgalena/shared/mojang";
+import type {
+  ChatInputCommandInteraction} from "discord.js";
 import {
-  ChatInputCommandInteraction,
   GuildMemberRoleManager,
   SlashCommandBuilder,
 } from "discord.js";

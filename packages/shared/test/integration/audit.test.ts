@@ -1,15 +1,16 @@
 import { afterEach, beforeAll, expect, setSystemTime, test } from "bun:test";
+import type {
+  LinkEntry} from "../../src/database";
 import {
   deleteLinkByDiscordId,
   getAuditLog,
   getLinkByDiscordId,
   insertLink,
-  LinkEntry,
   migrateDatabase,
   truncateDatabase,
   updateLink,
 } from "../../src/database";
-import { User } from "../../src/user";
+import type { User } from "../../src/user";
 import { createTestLinkInput } from "../helper/link";
 
 const user: User = {

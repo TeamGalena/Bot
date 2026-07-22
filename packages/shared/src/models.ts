@@ -1,2 +1,2 @@
-export * from "./paginated";
-export * from "./user";
+export type * from "./paginated";
+export type * from "./user";

@@ -1,4 +1,4 @@
-import { InputLinkEntry } from "../../src/database";
+import type { InputLinkEntry } from "../../src/database";
 
 export function createTestLinkInput(
   values: Partial<InputLinkEntry> = {}

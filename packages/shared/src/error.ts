@@ -3,7 +3,7 @@ import logger from "./logger";
 export class UserError extends Error {}
 
 export function wrapCatching<T extends unknown[]>(
-  func: (...args: T) => void | Promise<void>
+  func: (...args: T) => void | Promise<void>,
 ) {
   return async (...args: T) => {
     try {
@@ -16,20 +16,20 @@ export function wrapCatching<T extends unknown[]>(
 
 function wrapError<TArgs extends unknown[], TReturn>(
   func: (...args: TArgs) => Promise<TReturn>,
-  resolver: (ex: Error) => Error
+  resolver: (ex: Error) => Error,
 ) {
   return async (...args: TArgs): Promise<TReturn> => {
     try {
       return await func(...args);
-    } catch (ex) {
-      if (ex instanceof Error) throw resolver(ex);
-      else throw new Error(ex?.toString());
+    } catch (cause) {
+      if (cause instanceof Error) throw resolver(cause);
+      else throw new Error(cause?.toString(), { cause });
     }
   };
 }
 
 export function createErrorWrapper(resolver: (ex: Error) => Error) {
   return <TArgs extends unknown[], TReturn>(
-    func: (...args: TArgs) => Promise<TReturn>
+    func: (...args: TArgs) => Promise<TReturn>,
   ) => wrapError(func, resolver);
 }

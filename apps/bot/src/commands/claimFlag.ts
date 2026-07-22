@@ -2,7 +2,8 @@ import { addFlags } from "@teamgalena/shared/database";
 import { UserError } from "@teamgalena/shared/error";
 import { type Flag } from "@teamgalena/shared/flags";
 import type { User } from "@teamgalena/shared/models";
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import type { ChatInputCommandInteraction} from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 
 type DatePredicate = (date: Date) => boolean;
 

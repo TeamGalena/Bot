@@ -1,5 +1,6 @@
 import { getModBySearch } from "@teamgalena/shared/database";
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import type { ChatInputCommandInteraction} from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { createInfo } from "../templates/modInfo";
 
 export const command = new SlashCommandBuilder()

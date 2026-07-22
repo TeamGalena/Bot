@@ -1,13 +1,14 @@
 import { UserError } from "@teamgalena/shared/error";
 import logger from "@teamgalena/shared/logger";
 import type { User } from "@teamgalena/shared/models";
-import {
+import type {
   ChatInputCommandInteraction,
   Client,
+  SharedSlashCommand} from "discord.js";
+import {
   Collection,
   REST,
   Routes,
-  SharedSlashCommand,
   type Interaction,
   type RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord.js";
