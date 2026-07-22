@@ -16,6 +16,6 @@
     "@hapi/hapi": "^21.4.10",
     "@teamgalena/shared": "workspace:*",
     "@teamgalena/configs": "workspace:*",
-    "discord.js": "^14.16.3"
+    "discord.js": "^14.27.0"
   }
 }
