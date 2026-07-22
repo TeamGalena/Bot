@@ -15,7 +15,7 @@ export function createInfo({
   description,
   color,
   icon,
-}: ModEntry): MessageCreateOptions {
+}: ModEntry) {
   const iconURL = icon && `https://dev.galena.wiki/assets/${icon}/icon.png`;
 
   const embed = new EmbedBuilder()
@@ -29,7 +29,7 @@ export function createInfo({
       new ButtonBuilder()
         .setLabel("Issues")
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://github.com/${repository}/issues`)
+        .setURL(`https://github.com/${repository}/issues`),
     );
   }
 
@@ -38,7 +38,7 @@ export function createInfo({
       new ButtonBuilder()
         .setLabel("CurseForge")
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://curseforge.com/minecraft/mc-mods/${curseforgeSlug}`)
+        .setURL(`https://curseforge.com/minecraft/mc-mods/${curseforgeSlug}`),
     );
   }
 
@@ -47,12 +47,12 @@ export function createInfo({
       new ButtonBuilder()
         .setLabel("Modrinth")
         .setStyle(ButtonStyle.Link)
-        .setURL(`https://modrinth.com/mod/${modrinthSlug}`)
+        .setURL(`https://modrinth.com/mod/${modrinthSlug}`),
     );
   }
 
   return {
     embeds: [embed],
     components: [buttons],
-  };
+  } satisfies MessageCreateOptions;
 }

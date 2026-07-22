@@ -14,7 +14,7 @@ export async function sendModInfo(guild: Guild) {
   if (channel?.isSendable()) {
     const mods = await getMods();
     logger.debug(
-      `sending mod info to #${channel.name} for ${mods.length} mods`
+      `sending mod info to #${channel.name} for ${mods.length} mods`,
     );
 
     const previousMessages = await channel.messages.fetch({
@@ -24,7 +24,7 @@ export async function sendModInfo(guild: Guild) {
     await Promise.all(
       previousMessages
         .filter((it) => it.author.bot)
-        .map((it) => channel.messages.delete(it))
+        .map((it) => channel.messages.delete(it)),
     );
 
     for (const mod of mods) {

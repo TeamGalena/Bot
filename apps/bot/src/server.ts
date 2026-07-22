@@ -9,7 +9,7 @@ server.route({
   method: "GET",
   path: `/api/{uuid}`,
   handler: async (req, tools) => {
-    const uuid = req.params.uuid?.replaceAll(/[-_]/g, "");
+    const uuid = (req.params.uuid as string)?.replaceAll(/[-_]/g, "");
     const link = await getLinkByUuid(uuid);
     if (!link) {
       return tools
