@@ -20,6 +20,6 @@
     "@teamgalena/configs": "workspace:*",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
-    "chalk": "^5.6.2"
+    "chalk": "^6.0.0"
   }
 }
