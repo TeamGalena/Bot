@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^2.17.1",
-    "@faker-js/faker": "^10.5.0",
+    "@faker-js/faker": "^10.6.0",
     "@teamgalena/shared": "workspace:*",
     "@teamgalena/configs": "workspace:*",
     "arg": "^5.0.2"
